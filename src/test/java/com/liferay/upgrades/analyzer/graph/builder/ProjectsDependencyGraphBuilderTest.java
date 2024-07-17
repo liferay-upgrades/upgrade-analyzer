@@ -3,7 +3,7 @@ package com.liferay.upgrades.analyzer.graph.builder;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectDetails;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +17,11 @@ public class ProjectsDependencyGraphBuilderTest {
     public void testADependsOnB() {
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
-        ProjectDetails b = new ProjectDetails("b");
+        ProjectKey b = new ProjectKey("b");
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectDetails("a"),
+                        new ProjectKey("a"),
                         Set.of(b))
                 .addProject(
                         b,
@@ -40,13 +40,13 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectDetails("a"),
+                        new ProjectKey("a"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("b"),
+                        new ProjectKey("b"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("c"),
+                        new ProjectKey("c"),
                         Set.of()).build();
 
         Assertions.assertEquals(3, projectsDependencyGraph.getLeaves().size());
@@ -61,11 +61,11 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectDetails("a"),
-                        Set.of(new ProjectDetails("b")))
+                        new ProjectKey("a"),
+                        Set.of(new ProjectKey("b")))
                 .addProject(
-                        new ProjectDetails("b"),
-                        Set.of(new ProjectDetails("c"))
+                        new ProjectKey("b"),
+                        Set.of(new ProjectKey("c"))
                 ).build();
 
         List<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
@@ -94,13 +94,13 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectDetails("a"),
-                        Set.of(new ProjectDetails("b"), new ProjectDetails("c")))
+                        new ProjectKey("a"),
+                        Set.of(new ProjectKey("b"), new ProjectKey("c")))
                 .addProject(
-                        new ProjectDetails("b"),
+                        new ProjectKey("b"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("c"),
+                        new ProjectKey("c"),
                         Set.of()
                 ).build();
 
@@ -122,26 +122,26 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectDetails("search-portlet"),
-                        Set.of(new ProjectDetails("employee-api"), new ProjectDetails("employee-web")))
+                        new ProjectKey("search-portlet"),
+                        Set.of(new ProjectKey("employee-api"), new ProjectKey("employee-web")))
                 .addProject(
-                        new ProjectDetails("employee-api"),
+                        new ProjectKey("employee-api"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("employee-web"),
-                        Set.of(new ProjectDetails("webservice-core")))
+                        new ProjectKey("employee-web"),
+                        Set.of(new ProjectKey("webservice-core")))
                 .addProject(
-                        new ProjectDetails("leave-portlet"),
-                        Set.of(new ProjectDetails("webservice-core")))
+                        new ProjectKey("leave-portlet"),
+                        Set.of(new ProjectKey("webservice-core")))
                 .addProject(
-                        new ProjectDetails("favorite-assets"),
-                        Set.of(new ProjectDetails("employee-api")))
+                        new ProjectKey("favorite-assets"),
+                        Set.of(new ProjectKey("employee-api")))
                 .addProject(
-                        new ProjectDetails("employee-portal-language"),
+                        new ProjectKey("employee-portal-language"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("to-do-portlet"),
-                        Set.of(new ProjectDetails("webservice-core"))
+                        new ProjectKey("to-do-portlet"),
+                        Set.of(new ProjectKey("webservice-core"))
                 ).build();
 
 
