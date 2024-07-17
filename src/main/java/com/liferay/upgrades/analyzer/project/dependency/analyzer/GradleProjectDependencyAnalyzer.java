@@ -37,9 +37,11 @@ public class GradleProjectDependencyAnalyzer {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 String fileName = file.getFileName().toString();
 
-                if (fileName.equals("build.gradle")  &&  Files.exists(Paths.get(file.getParent().toString(), "src"))) {
+                if (fileName.equals("build.gradle") && Files.exists(Paths.get(file.getParent().toString(), "src"))) {
                     projectsDependencyGraphBuilder.addProject(
-                            getProjectInfo(file.getParent().toUri().getPath(), file.getParent().getFileName().toString()),
+                            getProjectInfo(
+                                    file.getParent().toUri().getPath(),
+                                    file.getParent().getFileName().toString()),
                             collectProjectDependencies(file));
                 }
 
