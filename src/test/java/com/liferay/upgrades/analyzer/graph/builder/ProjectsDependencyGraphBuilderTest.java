@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public class ProjectsDependencyGraphBuilderTest {
 
         Assertions.assertEquals(1, leaves.size());
         Assertions.assertEquals(b, leaves.get(0).getProjectInfo());
+        Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
 
     }
 
@@ -50,6 +52,7 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of()).build();
 
         Assertions.assertEquals(3, projectsDependencyGraph.getLeaves().size());
+        Assertions.assertEquals(1, projectsDependencyGraph.getDepth());
     }
 
     /*
@@ -70,17 +73,13 @@ public class ProjectsDependencyGraphBuilderTest {
 
         List<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
-        int depth = 0;
-
         while (leaves != null && !leaves.isEmpty()) {
             Assertions.assertEquals(1, leaves.size());
 
             leaves = new ArrayList<>(leaves.get(0).getConsumers());
-
-            depth++;
         }
 
-        Assertions.assertEquals(3, depth);
+        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
 
     }
 
@@ -111,9 +110,10 @@ public class ProjectsDependencyGraphBuilderTest {
         for (Project leaf : leaves) {
             Assertions.assertEquals(0, leaf.getDependencies().size());
             Assertions.assertEquals(1, leaf.getConsumers().size());
-            //Assertions.assertEquals(true, leaf.getConsumers().contains(new Project(new ProjectDetails("a"))));
+            Assertions.assertEquals(true, leaf.getConsumers().contains(new Project(new ProjectKey("a"))));
         }
 
+        Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
     }
 
     @Test
@@ -144,8 +144,9 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of(new ProjectKey("webservice-core"))
                 ).build();
 
-
-                 projectsDependencyGraph.getLeaves();
+        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
     }
+
+
 
 }
