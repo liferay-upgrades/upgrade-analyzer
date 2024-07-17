@@ -76,7 +76,7 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
 
         sb.append(
             dependencies.stream().map(
-                    Project::getKey
+                    Project::getName
             ).collect(
                     Collectors.joining(", ")
             )
