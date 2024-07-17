@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.analyzer;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectDetails;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 
 import java.io.BufferedReader;
@@ -53,7 +53,7 @@ public class GradleProjectDependencyAnalyzer {
 
     }
 
-    private Set<ProjectDetails> collectProjectDependencies(Path gradleFile) throws IOException {
+    private Set<ProjectKey> collectProjectDependencies(Path gradleFile) throws IOException {
         StringBuilder sb = new StringBuilder();
 
         try (BufferedReader bufferedReader = Files.newBufferedReader(
@@ -66,7 +66,7 @@ public class GradleProjectDependencyAnalyzer {
             }
         }
 
-        Set<ProjectDetails> dependencies = new HashSet<>();
+        Set<ProjectKey> dependencies = new HashSet<>();
 
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(sb.toString());
 
@@ -77,45 +77,45 @@ public class GradleProjectDependencyAnalyzer {
         return dependencies;
     }
 
-    private ProjectDetails getProjectInfo(String path, String rawProjectName) {
-        ProjectDetails projectInfo = getProjectInfo(rawProjectName);
+    private ProjectKey getProjectInfo(String path, String rawProjectName) {
+        ProjectKey projectInfo = getProjectInfo(rawProjectName);
 
         projectInfo.setPath(path);
 
         return projectInfo;
     }
-    private ProjectDetails getProjectInfo(String rawProjectName) {
+    private ProjectKey getProjectInfo(String rawProjectName) {
         String key = rawProjectName.trim().replaceAll("\'", "").replaceAll("\"", "");
 
         if (key.contains(":")) {
-            ProjectDetails projectDetails = this.projectInfos.get(key);
+            ProjectKey projectKey = this.projectInfos.get(key);
 
-            if (projectDetails != null) {
-                return projectDetails;
+            if (projectKey != null) {
+                return projectKey;
             }
 
             String name = key.substring(key.lastIndexOf(":") + 1);
 
-            projectDetails = this.projectInfos.remove(name);
+            projectKey = this.projectInfos.remove(name);
 
-            if (projectDetails == null) {
-                projectDetails = new ProjectDetails(name);
+            if (projectKey == null) {
+                projectKey = new ProjectKey(name);
             }
 
-            projectDetails.setName(name);
-            projectDetails.setKey(key);
-            projectDetails.setGroup(key.substring(0, key.lastIndexOf(":")));
+            projectKey.setName(name);
+            projectKey.setKey(key);
+            projectKey.setGroup(key.substring(0, key.lastIndexOf(":")));
 
-            this.projectInfos.put(key, projectDetails);
-            this.projectInfos.put(name, projectDetails);
+            this.projectInfos.put(key, projectKey);
+            this.projectInfos.put(name, projectKey);
 
-            return projectDetails;
+            return projectKey;
         }
 
-        return projectInfos.computeIfAbsent(key, name -> new ProjectDetails(key));
+        return projectInfos.computeIfAbsent(key, name -> new ProjectKey(key));
     }
 
-    private Map<String, ProjectDetails> projectInfos = new HashMap<>();
+    private Map<String, ProjectKey> projectInfos = new HashMap<>();
 
     private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile("project.*\\(*[\"'](.*)[\"']\\)");
 }

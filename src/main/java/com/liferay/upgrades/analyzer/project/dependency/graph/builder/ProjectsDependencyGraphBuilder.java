@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.graph.builder;
 
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectDetails;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,11 +9,11 @@ import java.util.Set;
 
 public class ProjectsDependencyGraphBuilder {
 
-    public ProjectsDependencyGraphBuilder addProject(ProjectDetails projectDetails, Set<ProjectDetails> dependencies) {
-        Project project = getOrCreate(projectDetails);
+    public ProjectsDependencyGraphBuilder addProject(ProjectKey projectKey, Set<ProjectKey> dependencies) {
+        Project project = getOrCreate(projectKey);
 
-        for (ProjectDetails projectDetailsDependency : dependencies) {
-            Project dependencyProject = getOrCreate(projectDetailsDependency);
+        for (ProjectKey projectKeyDependency : dependencies) {
+            Project dependencyProject = getOrCreate(projectKeyDependency);
 
             project.addDependency(dependencyProject);
             dependencyProject.addConsumer(project);
@@ -26,17 +26,17 @@ public class ProjectsDependencyGraphBuilder {
         return this;
     }
 
-    private Project getOrCreate(ProjectDetails projectDetails) {
+    private Project getOrCreate(ProjectKey projectKey) {
         return  _projects.computeIfAbsent(
-                projectDetails, key ->  {
-                Project newProject = new Project(projectDetails);
+                projectKey, key ->  {
+                Project newProject = new Project(projectKey);
                     _projectsDependencyGraph.addLeaf(newProject);
 
                 return newProject;
             });
     }
 
-    private Map<ProjectDetails, Project> _projects = new HashMap<>();
+    private Map<ProjectKey, Project> _projects = new HashMap<>();
 
     private ProjectsDependencyGraph _projectsDependencyGraph = new ProjectsDependencyGraph();
 

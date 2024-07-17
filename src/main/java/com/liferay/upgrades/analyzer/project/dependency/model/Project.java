@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Project {
 
-    private final ProjectDetails projectDetails;
+    private final ProjectKey projectKey;
     private final Set<Project> dependencies = new HashSet<>();
 
     private Set<Project> consumers = new HashSet<>();
@@ -21,16 +21,16 @@ public class Project {
         this.consumers.add(consumer);
     }
 
-    public ProjectDetails getProjectInfo() {
-        return projectDetails;
+    public ProjectKey getProjectInfo() {
+        return projectKey;
     }
 
     public Set<Project> getDependencies() {
         return dependencies;
     }
 
-    public Project(ProjectDetails projectDetails) {
-        this.projectDetails = projectDetails;
+    public Project(ProjectKey projectKey) {
+        this.projectKey = projectKey;
     }
 
     public void addDependency(Project subProject) {
@@ -40,12 +40,12 @@ public class Project {
     @Override
     public String toString() {
         return "{" +
-                "\"name\": \"" + projectDetails.getName() + '\"' +
+                "\"name\": \"" + projectKey.getName() + '\"' +
                 ", \"dependencies\" : " + Arrays.deepToString(consumers.toArray()) +
                 '}';
     }
 
     public String getKey() {
-        return projectDetails.getName();
+        return projectKey.getName();
     }
 }

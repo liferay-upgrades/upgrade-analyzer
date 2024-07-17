@@ -2,7 +2,7 @@ package com.liferay.upgrades.analyzer.project.dependency.model;
 
 import java.util.Objects;
 
-public class ProjectDetails {
+public class ProjectKey {
 
     private String name;
     private String key;
@@ -18,7 +18,7 @@ public class ProjectDetails {
 
     private String path;
 
-    public ProjectDetails(String name) {
+    public ProjectKey(String name) {
         this.name = name;
         this.key = name;
     }
@@ -51,7 +51,7 @@ public class ProjectDetails {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProjectDetails that = (ProjectDetails) o;
+        ProjectKey that = (ProjectKey) o;
         return Objects.equals(name, that.name) && Objects.equals(key, that.key) && Objects.equals(group, that.group);
     }
 
