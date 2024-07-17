@@ -1,12 +1,9 @@
 package com.liferay.upgrades.analyzer.graph.builder;
 
-import com.liferay.upgrades.analyzer.project.dependency.exporter.DOTProjectDependencyExporter;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.JSONProjectDependencyExporter;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.ProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
+import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectDetails;
-import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -35,16 +32,6 @@ public class ProjectsDependencyGraphBuilderTest {
         Assertions.assertEquals(1, leaves.size());
         Assertions.assertEquals(b, leaves.get(0).getProjectInfo());
 
-        print(projectsDependencyGraph);
-
-        Assertions.assertTrue(true);
-
-    }
-
-    private void print(ProjectsDependencyGraph projectsDependencyGraph) {
-        for (ProjectDependencyExporter<?> projectDependencyExporter : _projectDependencyExporters) {
-            projectDependencyExporter.export(projectsDependencyGraph);
-        }
     }
 
     @Test
@@ -63,11 +50,6 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of()).build();
 
         Assertions.assertEquals(3, projectsDependencyGraph.getLeaves().size());
-
-        print(projectsDependencyGraph);
-
-        Assertions.assertTrue(true);
-
     }
 
     /*
@@ -83,11 +65,23 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of(new ProjectDetails("b")))
                 .addProject(
                         new ProjectDetails("b"),
-                        Set.of(new ProjectDetails("c"))).build();
+                        Set.of(new ProjectDetails("c"))
+                ).build();
 
-        print(projectsDependencyGraph);
+        List<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
-        Assertions.assertTrue(true);
+        int depth = 0;
+
+        while (leaves != null && !leaves.isEmpty()) {
+            Assertions.assertEquals(1, leaves.size());
+
+            leaves = new ArrayList<>(leaves.get(0).getConsumers());
+
+            depth++;
+        }
+
+        Assertions.assertEquals(3, depth);
+
     }
 
     /*
@@ -107,68 +101,51 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of())
                 .addProject(
                         new ProjectDetails("c"),
-                        Set.of()).build();
+                        Set.of()
+                ).build();
 
-//        List<Project> leaves = new ArrayList<>(projectsDependencyBuilder.getLeaves());
-//
-//        Assertions.assertEquals(2, leaves.size());
-//
-//        Project leaf = leaves.get(0);
-//
-//        Project projectA = leaf.getConsumers();
-//
-//        Assertions.assertEquals(2, projectA.getSubProjects().size());
-//
-//        for (Project subProject : projectA.getSubProjects()) {
-//            Assertions.assertEquals(0, subProject.getSubProjects().size());
-//        }
+        Set<Project> leaves = projectsDependencyGraph.getLeaves();
 
-        print(projectsDependencyGraph);
+        Assertions.assertEquals(2, leaves.size());
+
+        for (Project leaf : leaves) {
+            Assertions.assertEquals(0, leaf.getDependencies().size());
+            Assertions.assertEquals(1, leaf.getConsumers().size());
+            //Assertions.assertEquals(true, leaf.getConsumers().contains(new Project(new ProjectDetails("a"))));
+        }
+
     }
 
     @Test
-    public void testADependsOnBandCD() {
+    public void testComplexDependencies() {
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
                         new ProjectDetails("search-portlet"),
-                        Set.of(new ProjectDetails("tudelft-employee-api"), new ProjectDetails("tudelft-employee-web")))
+                        Set.of(new ProjectDetails("employee-api"), new ProjectDetails("employee-web")))
                 .addProject(
-                        new ProjectDetails("tudelft-employee-api"),
+                        new ProjectDetails("employee-api"),
                         Set.of())
                 .addProject(
-                        new ProjectDetails("tudelft-employee-web"),
+                        new ProjectDetails("employee-web"),
                         Set.of(new ProjectDetails("webservice-core")))
                 .addProject(
                         new ProjectDetails("leave-portlet"),
                         Set.of(new ProjectDetails("webservice-core")))
                 .addProject(
                         new ProjectDetails("favorite-assets"),
-                        Set.of(new ProjectDetails("tudelft-employee-api")))
+                        Set.of(new ProjectDetails("employee-api")))
                 .addProject(
                         new ProjectDetails("employee-portal-language"),
                         Set.of())
                 .addProject(
                         new ProjectDetails("to-do-portlet"),
-                        Set.of(new ProjectDetails("webservice-core"))).build();
+                        Set.of(new ProjectDetails("webservice-core"))
+                ).build();
 
-//        List<Project> leaves = new ArrayList<>(projectsDependencyBuilder.getLeaves());
-//
-//        Assertions.assertEquals(2, leaves.size());
-//
-//        Project leaf = leaves.get(0);
-//
-//        Project projectA = leaf.getParent();
-//
-//        Assertions.assertEquals(2, projectA.getSubProjects().size());
-//
-//        for (Project subProject : projectA.getSubProjects()) {
-//            Assertions.assertEquals(0, subProject.getSubProjects().size());
-//        }
 
-        print(projectsDependencyGraph);
+                 projectsDependencyGraph.getLeaves();
     }
 
-    private List<ProjectDependencyExporter<?>> _projectDependencyExporters = List.of(new JSONProjectDependencyExporter(), new DOTProjectDependencyExporter());
 }
