@@ -45,7 +45,7 @@ public class Project {
                 '}';
     }
 
-    public String getKey() {
+    public String getName() {
         return projectKey.getName();
     }
 }

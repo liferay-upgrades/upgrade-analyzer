@@ -38,7 +38,7 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         StringBuilder sb = new StringBuilder();
 
         sb.append("\"");
-        sb.append(leaf.getKey());
+        sb.append(leaf.getName());
         sb.append("\"");
 
         lines.add(sb.toString());
@@ -47,11 +47,11 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
             StringBuilder builder = new StringBuilder();
 
             builder.append("\"");
-            builder.append(consumer.getKey());
+            builder.append(consumer.getName());
             builder.append("\"");
             builder.append(" -> ");
             builder.append("\"");
-            builder.append(leaf.getKey());
+            builder.append(leaf.getName());
             builder.append("\"");
 
             lines.add(builder.toString());
