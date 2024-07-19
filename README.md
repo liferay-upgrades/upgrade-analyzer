@@ -4,7 +4,7 @@ This project aims to accelerate upgrade compile times by developing a strategic 
 By analyzing the project's dependency graph, we will prioritize module optimization to maximize build
 efficiency and developer productivity on the compile phase at least.
 
-For now the output looks like this:
+For now, the output looks like this:
 
 ```
 // Game Plan //
@@ -29,10 +29,10 @@ Level 2 count: 9
 Each line into a level represents a project and follows this structure:
 `${project-name} ${number-of-consumers} (${list-of-dependencies})`
 
-The developers must work on the lowerst level first following
+The developers must work on the lowest level first following
 the projects from the top. 
 
-To build the project from source run:
+To build the project from source, run:
 
 ```
 ./gradlew clean build
