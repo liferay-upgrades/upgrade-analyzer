@@ -46,11 +46,17 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
                 (Project p2) -> -p2.getConsumers().size()
         );
 
-        for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
-            sb.append("Level " + entry.getKey() + " count: " + entry.getValue().size());
-            sb.append("\n");
+        int level = 1;
 
+        for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
             List<Project> projects = new ArrayList<>(entry.getValue());
+
+            if (projects.size() == 0) {
+                continue;
+            }
+
+            sb.append("Level " + level++ + " count: " + projects.size());
+            sb.append("\n");
 
             Collections.sort(projects, projectsComparator);
 
