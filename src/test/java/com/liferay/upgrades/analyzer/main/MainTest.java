@@ -5,6 +5,6 @@ import java.io.IOException;
 public class MainTest {
 
     public static void main(String[] args) throws IOException {
-        Main.main(new String[] {"/Users/rafaelpraxedes/Workspace/sources/zain/lfrgs-zain-ecommerce"});
+        Main.main(new String[] {"-f", "/home/me/dev/projects/upgrades/argus/lfrupg-argus", "-d"});
     }
 }
