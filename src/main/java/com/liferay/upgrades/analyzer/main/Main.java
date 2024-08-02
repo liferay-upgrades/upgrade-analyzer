@@ -5,8 +5,6 @@ import com.liferay.upgrades.analyzer.project.dependency.exporter.DOTProjectDepen
 import com.liferay.upgrades.analyzer.project.dependency.exporter.GamePlanProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 
-import java.io.IOException;
-
 public class Main {
     public static void main(String[] args) {
         ExportOptions exportOptions = resolveOptions(args);
@@ -15,9 +13,9 @@ public class Main {
             StringBuilder sb = new StringBuilder();
 
             sb.append("The available options are:\n");
-            sb.append("\t--dot-graph or -g to export in the DOT graph format\n");
+            sb.append("\t--dot-graph or -d to export in the DOT graph format\n");
             sb.append("\t--game-plan or -p to export the game plan\n");
-            sb.append("\t--directory or -d to specify the path for the liferay workspace\n");
+            sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
             sb.append("If just the /path/to/workspace is given, the output will be the same as -d /path/to/workspace -g");
 
             System.out.println(sb.toString());
@@ -35,10 +33,10 @@ public class Main {
         }
 
         if (exportOptions.dotGraph) {
-            System.out.println("// DOT Graph //");
             System.out.println(new DOTProjectDependencyExporter().export(projectsDependencyGraph));
         }
     }
+
 
     private static ExportOptions resolveOptions(String[] args) {
         ExportOptions exportOptions = new ExportOptions();
@@ -51,12 +49,12 @@ public class Main {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
 
-            if (arg.equals("--dot-graph") || arg.equals("-g")) {
+            if (arg.equals("--dot-graph") || arg.equals("-d")) {
                 exportOptions.dotGraph = true;
             }
             else if (arg.equals("--game-plan") || arg.equals("-p")) {
                 exportOptions.gamePlan = true;
-            } else if (arg.equals("--directory") || arg.equals("-d")) {
+            } else if (arg.equals("--folder") || arg.equals("-f")) {
                 exportOptions.directory = args[i + 1];
                 i++;
             }

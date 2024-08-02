@@ -3,6 +3,11 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,8 +32,40 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         sb.append("\n");
         sb.append("}");
 
-        return sb.toString();
+        long time = System.currentTimeMillis();
+
+        File outputFile = new File("graph-" + time + ".dot");
+
+        String result = null;
+
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))){
+            writer.write(sb.toString());
+
+             File svgFile = new File("graph-" + time + ".svg");
+
+             ProcessBuilder processBuilder = new ProcessBuilder("dot", "-Tsv" +
+                     "g", outputFile.getName(), "-o",  svgFile.getName());
+
+            Process process = processBuilder.start();
+
+            int statusCode = process.waitFor();
+
+            if (statusCode == 0 && svgFile.exists()) {
+                result =  "Svg file generated at " + svgFile.getAbsolutePath();
+            }
+            else {
+                result =  "run \"dot -Tsvg "+ outputFile.getName() + " -o output.svg\" to generate the svg file";
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return result;
     }
+
+
+
 
     private void addRelationships(Set<String> lines, Project leaf) {
         if (leaf == null) {
