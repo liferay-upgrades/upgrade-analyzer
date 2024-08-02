@@ -20,34 +20,41 @@ public class GradleProjectDependencyAnalyzer {
          projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
     }
 
-    public ProjectsDependencyGraph analyze(String rootProjectPath) throws IOException {
+    public ProjectsDependencyGraph analyze(String rootProjectPath) {
 
-        Files.walkFileTree(Paths.get(rootProjectPath), new SimpleFileVisitor<>() {
+        try {
+            Files.walkFileTree(Paths.get(rootProjectPath), new SimpleFileVisitor<>() {
 
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                if (dir.getFileName().toString().equals("src")) {
-                    return FileVisitResult.SKIP_SUBTREE;
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    if (dir.getFileName().toString().equals("src")) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+
+                    return FileVisitResult.CONTINUE;
                 }
 
-                return FileVisitResult.CONTINUE;
-            }
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    String fileName = file.getFileName().toString();
 
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                String fileName = file.getFileName().toString();
+                    if (fileName.equals("build.gradle") && Files.exists(Paths.get(file.getParent().toString(), "src"))) {
+                        projectsDependencyGraphBuilder.addProject(
+                                getProjectInfo(
+                                        file.getParent().toUri().getPath(),
+                                        file.getParent().getFileName().toString()),
+                                collectProjectDependencies(file));
+                    }
 
-                if (fileName.equals("build.gradle") && Files.exists(Paths.get(file.getParent().toString(), "src"))) {
-                    projectsDependencyGraphBuilder.addProject(
-                            getProjectInfo(
-                                    file.getParent().toUri().getPath(),
-                                    file.getParent().getFileName().toString()),
-                            collectProjectDependencies(file));
+                    return FileVisitResult.CONTINUE;
                 }
+            });
+        } catch (NoSuchFileException noSuchFileExceptionSuchFileException) {
+            System.out.println(rootProjectPath + " directory is not available");
 
-                return FileVisitResult.CONTINUE;
-            }
-        });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return projectsDependencyGraphBuilder.build();
 
