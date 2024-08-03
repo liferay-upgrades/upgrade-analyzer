@@ -32,40 +32,47 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         sb.append("\n");
         sb.append("}");
 
+        return generateSvg(sb.toString());
+    }
+
+    private static String generateSvg(String dotContent) {
         long time = System.currentTimeMillis();
 
-        File outputFile = new File("graph-" + time + ".dot");
+        File dotFile = new File("graph-" + time + ".dot");
 
-        String result = null;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(dotFile))) {
+            writer.write(dotContent);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))){
-            writer.write(sb.toString());
+        String result;
 
-             File svgFile = new File("graph-" + time + ".svg");
+        try {
+            File svgFile = new File("graph-" + time + ".svg");
 
-             ProcessBuilder processBuilder = new ProcessBuilder("dot", "-Tsv" +
-                     "g", outputFile.getName(), "-o",  svgFile.getName());
+            ProcessBuilder processBuilder = new ProcessBuilder("dot", "-Tsv" +
+                    "g", dotFile.getName(), "-o", svgFile.getName());
 
             Process process = processBuilder.start();
 
             int statusCode = process.waitFor();
 
             if (statusCode == 0 && svgFile.exists()) {
-                result =  "Svg file generated at " + svgFile.getAbsolutePath();
+                result = "Svg file generated at " + svgFile.getAbsolutePath();
+                dotFile.delete();
             }
             else {
-                result =  "run \"dot -Tsvg "+ outputFile.getName() + " -o output.svg\" to generate the svg file";
+                result = "run \"dot -Tsvg " + dotFile.getName() + " -o output.svg\" to generate the svg file";
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-
         return result;
     }
-
-
-
 
     private void addRelationships(Set<String> lines, Project leaf) {
         if (leaf == null) {
