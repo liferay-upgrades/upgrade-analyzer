@@ -1,10 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
-
-import java.util.Set;
-import java.util.function.BiConsumer;
+import static com.liferay.upgrades.analyzer.project.dependency.util.ExporterUtil.visitConsumers;
 
 public class ReverseDependencyTreeProjectDependencyExporter implements ProjectDependencyExporter<String>{
 
@@ -23,12 +20,6 @@ public class ReverseDependencyTreeProjectDependencyExporter implements ProjectDe
     }
 
 
-    private void visitConsumers(int level, Set<Project> projects, BiConsumer<Integer, Project> doVisit) {
-        for (Project project : projects) {
-            doVisit.accept(level, project);
 
-            visitConsumers(level + 1, project.getConsumers(), doVisit);
-        }
-    }
 
 }
