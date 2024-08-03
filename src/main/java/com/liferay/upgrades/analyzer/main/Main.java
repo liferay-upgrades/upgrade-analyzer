@@ -1,6 +1,7 @@
 package com.liferay.upgrades.analyzer.main;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.GradleProjectDependencyAnalyzer;
+import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.DOTProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.GamePlanProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
@@ -35,6 +36,10 @@ public class Main {
         if (exportOptions.dotGraph) {
             System.out.println(new DOTProjectDependencyExporter().export(projectsDependencyGraph));
         }
+
+        System.out.println(new CsvProjectDependencyExporter().export(projectsDependencyGraph));
+
+
     }
 
 
