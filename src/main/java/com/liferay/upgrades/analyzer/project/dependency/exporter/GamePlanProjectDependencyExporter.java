@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
+import static com.liferay.upgrades.analyzer.project.dependency.util.ExporterUtil.visitConsumers;
 
 public class GamePlanProjectDependencyExporter implements ProjectDependencyExporter<String> {
     @Override
@@ -91,13 +92,6 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
         sb.append(")");
     }
 
-    private void visitConsumers(int level, Set<Project> projects, BiConsumer<Integer, Project> doVisit) {
-        for (Project project : projects) {
-            doVisit.accept(level, project);
-
-            visitConsumers(level + 1, project.getConsumers(), doVisit);
-        }
-    }
 
     private Map<Integer, Set<Project>> _projectsMapLevels = new TreeMap<>();
 }
