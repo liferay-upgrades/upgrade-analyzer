@@ -19,7 +19,7 @@ public class Main {
             sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
             sb.append("If just the /path/to/workspace is given, the output will be the same as -d /path/to/workspace -g");
 
-            System.out.println(sb.toString());
+            System.out.println(sb);
 
             return;
         }
@@ -29,7 +29,6 @@ public class Main {
         ProjectsDependencyGraph projectsDependencyGraph = gradleProjectDependencyAnalyzer.analyze(exportOptions.directory);
 
         if  (exportOptions.gamePlan) {
-            System.out.println("// Game Plan //");
             System.out.println(new GamePlanProjectDependencyExporter().export(projectsDependencyGraph));
         }
 
@@ -38,7 +37,6 @@ public class Main {
         }
 
         System.out.println(new CsvProjectDependencyExporter().export(projectsDependencyGraph));
-
 
     }
 
