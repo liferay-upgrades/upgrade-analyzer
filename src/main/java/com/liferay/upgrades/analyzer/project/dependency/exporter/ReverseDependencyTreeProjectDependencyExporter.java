@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import static com.liferay.upgrades.analyzer.project.dependency.util.ExporterUtil.visitConsumers;
+import static com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil.visitConsumers;
 
 public class ReverseDependencyTreeProjectDependencyExporter implements ProjectDependencyExporter<String>{
 
