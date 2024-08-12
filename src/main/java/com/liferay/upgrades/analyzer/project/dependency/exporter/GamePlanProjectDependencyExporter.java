@@ -3,6 +3,9 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,7 +77,19 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
             }
         }
 
-        return sb.toString();
+
+        long time = System.currentTimeMillis();
+
+        File gamePlanFile = new File("projects-" + time + ".txt");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(gamePlanFile))) {
+            writer.write(sb.toString());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return "Game Plan generated at " + gamePlanFile.getAbsolutePath();
     }
 
     private void appendDependencies(StringBuilder sb, Project project) {
