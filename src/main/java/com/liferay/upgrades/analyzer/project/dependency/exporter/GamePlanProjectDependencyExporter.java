@@ -20,24 +20,29 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
     public String export(ProjectsDependencyGraph projectsDependencyGraph) {
         StringBuilder sb = new StringBuilder();
 
+        Set<Project> allProjects = new HashSet<>();
+
         visitConsumers(1, projectsDependencyGraph.getLeaves(), (level, project) -> {
+            allProjects.add(project);
             Set<Project> projects = _projectsMapLevels.computeIfAbsent(level, key -> new HashSet<>());
 
             for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
 
                 if (entry.getValue().contains(project)) {
-                    if (entry.getKey() < level) {
+                    if (entry.getKey() <= level) {
                         entry.getValue().remove(project);
+                        break;
                     }
-
-                    return;
+                    else {
+                        return;
+                    }
                 }
             }
 
             projects.add(project);
         });
 
-        sb.append("This project contains " +
+        sb.append("This project contains " + allProjects.size() + " projects with " +
                 _projectsMapLevels.size() + " level(s) of project dependencies.");
         sb.append("\n");
 
