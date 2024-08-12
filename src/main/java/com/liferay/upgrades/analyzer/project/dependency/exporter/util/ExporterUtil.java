@@ -1,4 +1,4 @@
-package com.liferay.upgrades.analyzer.project.dependency.util;
+package com.liferay.upgrades.analyzer.project.dependency.exporter.util;
 
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 

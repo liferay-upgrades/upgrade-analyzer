@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static com.liferay.upgrades.analyzer.project.dependency.util.ExporterUtil.visitConsumers;
+import static com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil.visitConsumers;
 
 public class GamePlanProjectDependencyExporter implements ProjectDependencyExporter<String> {
     @Override
