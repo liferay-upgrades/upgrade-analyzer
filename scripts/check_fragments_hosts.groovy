@@ -8,8 +8,13 @@ import org.osgi.framework.FrameworkUtil;
 BundleContext bundleContext = FrameworkUtil.getBundle(DDMContentLocalService.class).getBundleContext();
 
 for (Bundle bundle : bundleContext.getBundles()) {
+    String vendor = bundle.getHeaders().get("Bundle-Vendor");
+
+    if (vendor != null && vendor.startsWith("Liferay")) {
+        continue;
+    }
+
     String headerContent = bundle.getHeaders().get("Fragment-Host");
-    String bundleSymbolicName = bundle.getHeaders().get("Bundle-SymbolicName");
 
     if (headerContent != null && !headerContent.isEmpty()) {
         List<String> fileList = new ArrayList<>();
@@ -30,17 +35,18 @@ for (Bundle bundle : bundleContext.getBundles()) {
 
 def collectFiles(Bundle bundle, String path, fileList) {
     Enumeration<String> resources = bundle.getEntryPaths(path);
-    
+
     if (resources != null) {
         while (resources.hasMoreElements()) {
             String resourcePath = resources.nextElement();
 
-            if (resourcePath.endsWith(".jsp") || resourcePath.endsWith(".jspf")) {
-                fileList.add(resourcePath);
-            }
-            else if (resourcePath.endsWith("/")){
+            if (resourcePath.endsWith("/")){
                 collectFiles(bundle, resourcePath, fileList);
             }
+            else if (resourcePath.endsWith(".jsp") || resourcePath.endsWith(".jspf")) {
+                fileList.add(resourcePath);
+            }
+            
         }
     }
 }
