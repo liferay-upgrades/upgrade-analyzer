@@ -33,7 +33,7 @@ for (Bundle bundle : bundleContext.getBundles()) {
     }
 }
 
-def collectFiles(Bundle bundle, String path, fileList) {
+def collectFiles(Bundle bundle, String path, List<String> fileList) {
     Enumeration<String> resources = bundle.getEntryPaths(path);
 
     if (resources != null) {
