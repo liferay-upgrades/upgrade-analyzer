@@ -27,11 +27,13 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
             for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
 
                 if (entry.getValue().contains(project)) {
-                    if (entry.getKey() < level) {
+                    if (entry.getKey() <= level) {
                         entry.getValue().remove(project);
+                        break;
                     }
-
-                    return;
+                    else {
+                        return;
+                    }
                 }
             }
 
