@@ -32,7 +32,7 @@ Each line into a level represents a project and follows this structure:
 The developers must work on the lowest level first following
 the projects from the top. 
 
-To build the project from source, run:
+1 - To build the project from source, run:
 
 ```
 ./gradlew clean build
@@ -43,3 +43,9 @@ To analyze an upgrade project using your local build run:
 ```
 java -jar build/libs/upgrade-analyzer-*.jar /path/to/client/workspace
 ```
+2 - To use the latest published version, run:
+
+```
+curl -o- https://raw.githubusercontent.com/liferay-upgrades/upgrade-analyzer/master/install.sh | sh
+```
+to download and install the latest version. It will include a bash function named "analyze_upgrade_project" to execute the tool. You might run the tool without parameters to get the options available.
