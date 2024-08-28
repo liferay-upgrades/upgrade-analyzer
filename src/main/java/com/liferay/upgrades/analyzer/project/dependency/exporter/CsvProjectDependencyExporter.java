@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil.visitConsumers;
 
@@ -42,7 +44,16 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Level,Module Name,Errors Before,Errors After");
+        sb.append("Level," +
+                "Bundle Name," +
+                "Symbolic Name," +
+                "Dependencies," +
+                "Nº of compile errors before automation," +
+                "Nº of compile errors after automation," +
+                "Automation suggested fix?," +
+                "Nº of errors fixed by suggestions," +
+                "Nº of errors fixed (Total)," +
+                "Obs");
         sb.append("\n");
 
         Comparator<Project> projectsComparator = Comparator.comparingInt(
@@ -67,7 +78,28 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
                 sb.append(",");
                 sb.append(project.getName());
                 sb.append(",");
+                sb.append(project.getName());
                 sb.append(",");
+                sb.append(
+                        Stream.of(
+                                project.getDependencies()
+                        ).flatMap(
+                                Set::stream
+                        ).map(
+                                p -> p.getName()
+                        ).collect(
+                                Collectors.joining( " ")
+                        )
+                );
+                sb.append(",");
+                sb.append("1");
+                sb.append(",");
+                sb.append("0");
+                sb.append(",");
+                sb.append("FALSE");
+                sb.append(",");
+                sb.append(",");
+                sb.append("0");
                 sb.append(",");
                 sb.append("\n");
             }
