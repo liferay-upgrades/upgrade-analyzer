@@ -17,7 +17,7 @@ public class Main {
             sb.append("\t--dot-graph or -d to export in the DOT graph format\n");
             sb.append("\t--game-plan or -p to export the game plan\n");
             sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
-            sb.append("If just the /path/to/workspace is given, the output will be the same as -d /path/to/workspace -g");
+            sb.append("If just the /path/to/workspace is given, the output will be the same as -p -f /path/to/workspace");
 
             System.out.println(sb);
 
