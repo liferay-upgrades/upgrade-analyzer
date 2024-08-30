@@ -29,7 +29,7 @@ Level 2 count: 9
 Each line into a level represents a project and follows this structure:
 `${project-name} ${number-of-consumers} (${list-of-dependencies})`
 
-Note: The developers must work on the lowest level first following
+Note: the developers must work on the lowest level first following
 the projects from the top. 
 
 1 - To build the project from source, run:
