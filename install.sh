@@ -1,17 +1,17 @@
-filePath="dev/upgrades"
-fileName="analyzer.jar"
+install_file_path=".liferay-upgrades-analyzer"
+file_name="upgrade-analyzer.jar"
 
 function getLatestSnapshot {
-    owner="liferay-upgrades"
-    repository="upgrade-analyzer"
-    tag="v2.0.3"
-    snapshot="upgrade-analyzer-1.0-SNAPSHOT.jar"
+    location="$(curl -I -s https://github.com/liferay-upgrades/upgrade-analyzer/releases/latest | grep "location:" | cut -d " " -f 2 | sed 's/.$//')"
+    url="${location}/${file_name}"
+
+    echo "Starting download from ${url}"
     
     #create directory if not exists
-    cd ~ && mkdir -p $filePath && cd $filePath && 
+    cd ~ && mkdir -p $install_file_path && cd $install_file_path &&
     curl -L \
-    -o $fileName \
-    https://github.com/$owner/$repository/releases/download/$tag/$snapshot
+    -o $file_name \
+    $url
 }
 
 #$1=functionDeclaration
@@ -25,7 +25,7 @@ function addAliasOnBashrcFile {
 
     #only add alias and function if analyze_upgrade_project function is not present on bashrc file
     if ! (grep -q $analyzerFunctionName ~/.bashrc); then  
-        analyzerFunctionBody="java -jar ~/$filePath/$fileName \"\$@\""
+        analyzerFunctionBody="java -jar ~/$install_file_path/$file_name \"\$@\""
         analyzerFunction=$(writeFunction "$analyzerFunctionName" "$analyzerFunctionBody")
         
         aliasFunctionBody="alias aup=\""$analyzerFunctionName"\""
@@ -37,4 +37,4 @@ function addAliasOnBashrcFile {
 }
 
 getLatestSnapshot
-addAliasOnBashrcFile
+#addAliasOnBashrcFile
