@@ -48,4 +48,4 @@ java -jar build/libs/upgrade-analyzer-*.jar /path/to/client/workspace
 ```
 curl -o- https://raw.githubusercontent.com/liferay-upgrades/upgrade-analyzer/master/install.sh | sh
 ```
-to download and install the latest version. It will include a bash function named "analyze_upgrade_project" to execute the tool. You might run the tool without parameters to get the options available.
+to download and install the latest version. It will include a bash function named "analyze_upgrade_project" and an alias called "aup" to execute the tool. You might run the tool without parameters to get the available options. To test the installation, after reload your `.bachrc`, run in your terminal: `aup /path/to/client/workspace`
