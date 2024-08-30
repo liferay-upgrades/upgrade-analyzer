@@ -32,6 +32,7 @@ jobs:
 
       - name: Execute Gradle build
       - run: ./gradlew clean build
+      - name: Copy JAR
       - run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging
 
       - name: Upload binaries to release
