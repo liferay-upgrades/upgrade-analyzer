@@ -26,8 +26,22 @@ public class GradleProjectDependencyAnalyzer {
             Files.walkFileTree(Paths.get(rootProjectPath), new SimpleFileVisitor<>() {
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    if (dir.getFileName().toString().equals("src")) {
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    String folderName = dir.getFileName().toString();
+
+                    if (_SKIP_FOLDERS.contains(folderName)) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+
+                    if (folderName.equals("src") &&
+                            Files.exists(Paths.get(dir.toString(), "WEB-INF/liferay-look-and-feel.xml"))) {
+
+                        projectsDependencyGraphBuilder.addProject(
+                                getProjectInfo(
+                                        dir.getParent().toUri().getPath(),
+                                        dir.getParent().getFileName().toString()),
+                               Collections.emptySet());
+
                         return FileVisitResult.SKIP_SUBTREE;
                     }
 
@@ -125,4 +139,13 @@ public class GradleProjectDependencyAnalyzer {
     private Map<String, ProjectKey> projectInfos = new HashMap<>();
 
     private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile("project.*\\(*[\"'](.*)[\"']\\)");
+
+    private static final Set<String> _SKIP_FOLDERS = new HashSet<>();
+
+    static {
+        _SKIP_FOLDERS.add("bin");
+        _SKIP_FOLDERS.add("build");
+        _SKIP_FOLDERS.add("node_modules");
+
+    }
 }
