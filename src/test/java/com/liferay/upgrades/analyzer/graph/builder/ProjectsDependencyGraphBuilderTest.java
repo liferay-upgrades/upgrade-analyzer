@@ -33,6 +33,7 @@ public class ProjectsDependencyGraphBuilderTest {
         Assertions.assertEquals(1, leaves.size());
         Assertions.assertEquals(b, leaves.get(0).getProjectInfo());
         Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
+        Assertions.assertTrue(false);
 
     }
 
