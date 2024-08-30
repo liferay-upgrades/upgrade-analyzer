@@ -37,4 +37,4 @@ function addAliasOnBashrcFile {
 }
 
 getLatestSnapshot
-#addAliasOnBashrcFile
+addAliasOnBashrcFile
