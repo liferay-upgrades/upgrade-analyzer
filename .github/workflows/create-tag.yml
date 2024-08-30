@@ -5,15 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
       - name: Bump version and push tag
         id: tag_version
-      - uses: mathieudutour/github-tag-action@v6.2
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
-      - uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
@@ -30,15 +29,15 @@ jobs:
         with:
           gradle-version: 8.4
 
-      # - name: Execute Gradle build
-      #   run: ./gradlew clean build
+      - name: Execute Gradle build
+        run: ./gradlew clean build
         
-      # - name: Copy JAR
-      #   run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging
+      - name: Copy JAR
+        run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging
 
-      # - name: Upload binaries to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     file: staging/upgrade-analyzer.jar
-      #     tag: ${{ steps.tag_version.outputs.new_tag }}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: staging/upgrade-analyzer.jar
+          tag: ${{ steps.tag_version.outputs.new_tag }}
