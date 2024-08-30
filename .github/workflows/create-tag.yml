@@ -29,8 +29,8 @@ jobs:
         with:
           gradle-version: 8.4
 
-      - name: Execute Gradle build
-        run: ./gradlew clean build
+      # - name: Execute Gradle build
+      #   run: ./gradlew clean build
         
       # - name: Copy JAR
       #   run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging
