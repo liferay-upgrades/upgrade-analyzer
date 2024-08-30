@@ -58,8 +58,8 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
 
         Comparator<Project> projectsComparator = Comparator.comparingInt(
                 (Project p1) -> -p1.getConsumers().size()
-        ).thenComparingInt(
-                (Project p2) -> -p2.getConsumers().size()
+        ).thenComparing(
+                Project::getName
         );
 
         int level = 1;
