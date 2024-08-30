@@ -4,7 +4,7 @@ fileName="analyzer.jar"
 function getLatestSnapshot {
     owner="liferay-upgrades"
     repository="upgrade-analyzer"
-    tag="v2.0.2"
+    tag="v2.0.3"
     snapshot="upgrade-analyzer-1.0-SNAPSHOT.jar"
     
     #create directory if not exists
