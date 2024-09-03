@@ -28,7 +28,7 @@ public class ProjectsDependencyGraphBuilder {
 
     private Project getOrCreate(ProjectKey projectKey) {
         return  _projects.computeIfAbsent(
-                projectKey, key ->  {
+                projectKey.getName(), key ->  {
                 Project newProject = new Project(projectKey);
                     _projectsDependencyGraph.addLeaf(newProject);
 
@@ -36,7 +36,7 @@ public class ProjectsDependencyGraphBuilder {
             });
     }
 
-    private Map<ProjectKey, Project> _projects = new HashMap<>();
+    private Map<String, Project> _projects = new HashMap<>();
 
     private ProjectsDependencyGraph _projectsDependencyGraph = new ProjectsDependencyGraph();
 
