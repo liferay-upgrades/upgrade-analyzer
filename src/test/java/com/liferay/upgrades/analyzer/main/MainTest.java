@@ -5,6 +5,6 @@ import java.io.IOException;
 public class MainTest {
 
     public static void main(String[] args) throws IOException {
-        Main.main(new String[] {"-f", "/home/me/dev/projects/upgrades/argus/lfrupg-argus", "-d"});
+        Main.main(new String[] {"-f", "path/to/workspace", "-d"});
     }
 }
