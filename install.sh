@@ -3,7 +3,8 @@ file_name="upgrade-analyzer.jar"
 
 function getLatestSnapshot {
     location="$(curl -I -s https://github.com/liferay-upgrades/upgrade-analyzer/releases/latest | grep "location:" | cut -d " " -f 2 | sed 's/.$//')"
-    url="${location}/${file_name}"
+    tag="${location##*/}"
+    url="https://github.com/liferay-upgrades/upgrade-analyzer/releases/download/${tag}/${file_name}"
 
     echo "Starting download from ${url}"
     
