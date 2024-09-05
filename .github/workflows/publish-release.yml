@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 11
-          distribution: 'temurin'
+          distribution: 'zulu'
 
       - name: Build with Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew clean build
         
       - name: Copy JAR
-        run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging
+        run: mkdir staging && cp build/libs/upgrade-analyzer.jar staging && cd staging && ls -lah && cd ..
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
