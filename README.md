@@ -53,3 +53,6 @@ To test the installation, after reloading your `.bashrc`, run in your terminal:
 ```
 aup /path/to/client/workspace
 ```
+**Requirements to build and run**
+
+JDK 11+
