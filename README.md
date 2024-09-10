@@ -1,8 +1,8 @@
 # Upgrade Analyzer
 
-This project aims to accelerate upgrade compile times by developing a strategic roadmap.
-By analyzing the project's dependency graph, we will prioritize module optimization to maximize build
-efficiency and developer productivity on the compile phase at least.
+This project aims to accelerate the upgrade compile phase duration by developing a strategic roadmap.
+By analyzing the project's dependency graph, it will prioritize module optimization to maximize build
+efficiency and developer productivity in the compile phase at least.
 
 For now, the output looks like this:
 
