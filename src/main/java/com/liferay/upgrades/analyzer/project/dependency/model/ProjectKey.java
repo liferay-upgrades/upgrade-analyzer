@@ -23,6 +23,11 @@ public class ProjectKey {
         this.key = name;
     }
 
+    public ProjectKey(String name, String path) {
+        this(name);
+        this.path = path;
+    }
+
     public String getName() {
         return name;
     }
