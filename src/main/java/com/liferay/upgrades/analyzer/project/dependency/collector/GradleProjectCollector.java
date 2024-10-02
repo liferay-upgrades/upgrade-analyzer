@@ -21,8 +21,9 @@ public class GradleProjectCollector implements ProjectCollector {
     @Override
     public boolean matches(String fileName, Path file) {
 
-        if (fileName.equals("build.gradle") &&
-                Files.exists(Paths.get(file.getParent().toString(), "src"))) {
+        if (fileName.equals("build.gradle")
+                && Files.exists(Paths.get(file.getParent().toString(), "src"))
+                && !Files.exists(Paths.get(file.getParent().toString(), "liferay-theme.json"))) {
             return true;
         }
 

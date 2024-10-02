@@ -24,8 +24,9 @@ public class MavenProjectCollector implements ProjectCollector{
     @Override
     public boolean matches(String fileName, Path file) {
 
-        if (fileName.equals("pom.xml") &&
-                Files.exists(Paths.get(file.getParent().toString(), "src"))) {
+        if (fileName.equals("pom.xml")
+                && Files.exists(Paths.get(file.getParent().toString(), "src"))
+                && !Files.exists(Paths.get(file.getParent().toString(), "liferay-theme.json"))) {
            return true;
         }
 
@@ -102,7 +103,7 @@ public class MavenProjectCollector implements ProjectCollector{
             }
         }
         catch (Exception exception) {
-            throw new RuntimeException(exception);
+            throw new RuntimeException("Error processing " + file.toAbsolutePath(), exception);
         }
     }
 
