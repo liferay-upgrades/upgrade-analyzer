@@ -1,10 +1,15 @@
 package com.liferay.upgrades.analyzer.main;
 
-import com.liferay.upgrades.analyzer.project.dependency.analyzer.GradleProjectDependencyAnalyzer;
+import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
+import com.liferay.upgrades.analyzer.project.dependency.collector.GradleProjectCollector;
+import com.liferay.upgrades.analyzer.project.dependency.collector.MavenProjectCollector;
+import com.liferay.upgrades.analyzer.project.dependency.collector.ThemeProjectCollector;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.DOTProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.GamePlanProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,7 +29,8 @@ public class Main {
             return;
         }
 
-        GradleProjectDependencyAnalyzer gradleProjectDependencyAnalyzer = new GradleProjectDependencyAnalyzer();
+        ProjectDependencyAnalyzer gradleProjectDependencyAnalyzer = new ProjectDependencyAnalyzer(
+                List.of(new GradleProjectCollector(), new MavenProjectCollector(), new ThemeProjectCollector()));
 
         ProjectsDependencyGraph projectsDependencyGraph = gradleProjectDependencyAnalyzer.analyze(exportOptions.directory);
 
