@@ -6,9 +6,9 @@ import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 public class DOTProjectDependencyExporter implements ProjectDependencyExporter<String> {
@@ -21,8 +21,33 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         //for now remove duplications using a Set
         Set<String> lines = new TreeSet<>();
 
-        projectsDependencyGraph.getLeaves().forEach(
-                leaf -> addRelationships(lines, leaf));
+        Stack<Project> stack = new Stack<>();
+
+        projectsDependencyGraph.getLeaves().forEach(stack::push);
+
+        Set<String> visitedProjects = new HashSet<>();
+
+        while (!stack.isEmpty()) {
+            Project currentProject = stack.pop();
+
+            visitedProjects.add(currentProject.getName());
+
+            StringBuilder currentProjectSB = new StringBuilder();
+
+            currentProjectSB.append("\"");
+            currentProjectSB.append(currentProject.getName());
+            currentProjectSB.append("\"");
+
+            lines.add(currentProjectSB.toString());
+
+            for (Project consumer : currentProject.getConsumers()) {
+                addRelationships(lines, currentProject, consumer);
+
+                if (!visitedProjects.contains(consumer.getName())) {
+                    stack.push(consumer);
+                }
+            }
+        }
 
         lines.forEach(line -> {
             sb.append("\n\t");
@@ -34,6 +59,37 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
 
         return generateSvg(sb.toString());
     }
+
+    private void addRelationships(Set<String> lines, Project leaf) {
+        if (leaf == null) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\"");
+        sb.append(leaf.getName());
+        sb.append("\"");
+
+        lines.add(sb.toString());
+
+        for (Project consumer : leaf.getConsumers()) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append("\"");
+            builder.append(consumer.getName());
+            builder.append("\"");
+            builder.append(" -> ");
+            builder.append("\"");
+            builder.append(leaf.getName());
+            builder.append("\"");
+
+            lines.add(builder.toString());
+
+            addRelationships(lines, consumer);
+        }
+    }
+
 
     private static String generateSvg(String dotContent) {
         long time = System.currentTimeMillis();
@@ -74,33 +130,21 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         return result;
     }
 
-    private void addRelationships(Set<String> lines, Project leaf) {
-        if (leaf == null) {
+    private void addRelationships(Set<String> lines, Project leaf, Project consumer) {
+        if (consumer == null) {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
-        sb.append("\"");
-        sb.append(leaf.getName());
-        sb.append("\"");
+        builder.append("\"");
+        builder.append(consumer.getName());
+        builder.append("\"");
+        builder.append(" -> ");
+        builder.append("\"");
+        builder.append(leaf.getName());
+        builder.append("\"");
 
-        lines.add(sb.toString());
-
-        for (Project consumer : leaf.getConsumers()) {
-            StringBuilder builder = new StringBuilder();
-
-            builder.append("\"");
-            builder.append(consumer.getName());
-            builder.append("\"");
-            builder.append(" -> ");
-            builder.append("\"");
-            builder.append(leaf.getName());
-            builder.append("\"");
-
-            lines.add(builder.toString());
-
-            addRelationships(lines, consumer);
-        }
+        lines.add(builder.toString());
     }
 }
