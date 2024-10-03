@@ -1,4 +1,4 @@
-package com.liferay.upgrades.analyzer.project.dependency.collector;
+package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
@@ -15,7 +15,7 @@ import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.util.Collections;
 
-public class ThemeProjectCollector implements ProjectCollector{
+public class ThemeProjectDetector implements ProjectDetector {
     @Override
     public boolean matches(String fileName, Path file) {
         if (fileName.equals("liferay-look-and-feel.xml")) {
@@ -26,7 +26,7 @@ public class ThemeProjectCollector implements ProjectCollector{
     }
 
     @Override
-    public void collect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(getThemeProjectKey(file), Collections.emptySet());
     }
 
