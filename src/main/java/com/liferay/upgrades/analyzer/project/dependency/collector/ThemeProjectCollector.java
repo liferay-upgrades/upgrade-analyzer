@@ -55,6 +55,10 @@ public class ThemeProjectCollector implements ProjectCollector{
 
                 String themeRootFolderName = themeRootPath.substring(themeRootPath.lastIndexOf("/") + 1);
 
+                if (themeRootFolderName.equalsIgnoreCase(themeId)) {
+                    return  new ProjectKey(themeRootFolderName, themeRootPath);
+                }
+
                 return  new ProjectKey(themeRootFolderName + "[" + themeId + "]", themeRootPath);
             }
         }
