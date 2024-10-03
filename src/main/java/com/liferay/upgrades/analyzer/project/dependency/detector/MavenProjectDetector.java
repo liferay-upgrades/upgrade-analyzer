@@ -1,4 +1,4 @@
-package com.liferay.upgrades.analyzer.project.dependency.collector;
+package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class MavenProjectCollector implements ProjectCollector{
+public class MavenProjectDetector implements ProjectDetector {
     @Override
     public boolean matches(String fileName, Path file) {
 
@@ -34,12 +34,12 @@ public class MavenProjectCollector implements ProjectCollector{
     }
 
     @Override
-    public void collect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         collect(file);
     }
 
     @Override
-    public void flush(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void finalize(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         for (Map.Entry<String, Set<String>> module : modules.entrySet()) {
             projectsDependencyGraphBuilder.addProject(
                 new ProjectKey(module.getKey(), modulesPath.get(module.getKey())),

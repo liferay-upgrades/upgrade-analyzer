@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.analyzer;
 
-import com.liferay.upgrades.analyzer.project.dependency.collector.ProjectCollector;
+import com.liferay.upgrades.analyzer.project.dependency.detector.ProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 
@@ -12,9 +12,9 @@ import java.util.*;
 public class ProjectDependencyAnalyzer {
     private final ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder;
 
-    public ProjectDependencyAnalyzer(List<ProjectCollector> projectCollectors) {
+    public ProjectDependencyAnalyzer(List<ProjectDetector> projectDetectors) {
          this.projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
-         this.projectCollectors = projectCollectors;
+         this.projectDetectors = projectDetectors;
     }
 
     public ProjectsDependencyGraph analyze(String rootProjectPath) {
@@ -37,9 +37,9 @@ public class ProjectDependencyAnalyzer {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     String fileName = file.getFileName().toString();
 
-                    for (ProjectCollector projectCollector : projectCollectors) {
-                        if (projectCollector.matches(fileName, file)) {
-                            projectCollector.collect(file, projectsDependencyGraphBuilder);
+                    for (ProjectDetector projectDetector : projectDetectors) {
+                        if (projectDetector.matches(fileName, file)) {
+                            projectDetector.detect(file, projectsDependencyGraphBuilder);
                         }
                     }
 
@@ -53,15 +53,15 @@ public class ProjectDependencyAnalyzer {
             throw new RuntimeException(e);
         }
 
-        for (ProjectCollector projectCollector : projectCollectors) {
-            projectCollector.flush(projectsDependencyGraphBuilder);
+        for (ProjectDetector projectDetector : projectDetectors) {
+            projectDetector.finalize(projectsDependencyGraphBuilder);
         }
 
         return projectsDependencyGraphBuilder.build();
 
     }
 
-    private final List<ProjectCollector> projectCollectors;
+    private final List<ProjectDetector> projectDetectors;
 
     private static final Set<String> _SKIP_FOLDERS = new HashSet<>();
 

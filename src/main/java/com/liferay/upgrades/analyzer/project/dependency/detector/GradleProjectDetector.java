@@ -1,11 +1,9 @@
-package com.liferay.upgrades.analyzer.project.dependency.collector;
+package com.liferay.upgrades.analyzer.project.dependency.detector;
 
-import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GradleProjectCollector implements ProjectCollector {
+public class GradleProjectDetector implements ProjectDetector {
     @Override
     public boolean matches(String fileName, Path file) {
 
@@ -31,7 +29,7 @@ public class GradleProjectCollector implements ProjectCollector {
     }
 
     @Override
-    public void collect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(
                 getProjectKey(
                         file.getParent().toUri().getPath(),
