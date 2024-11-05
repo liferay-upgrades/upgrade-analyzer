@@ -2,9 +2,8 @@ package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.util.ProjectDetectorUtil;
 
-import java.io.BufferedReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,24 +37,10 @@ public class GradleProjectDetector implements ProjectDetector {
     }
 
     private Set<ProjectKey> collectProjectDependencies(Path gradleFile) {
-        StringBuilder sb = new StringBuilder();
-
-        try (BufferedReader bufferedReader = Files.newBufferedReader(
-                gradleFile, StandardCharsets.UTF_8)) {
-
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-                sb.append("\n");
-            }
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         Set<ProjectKey> dependencies = new HashSet<>();
 
-        Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(sb.toString());
+        Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
+                ProjectDetectorUtil.readFile(gradleFile));
 
         while (matcher.find()) {
             dependencies.add(getProjectKey(matcher.group(1)));
@@ -72,7 +57,7 @@ public class GradleProjectDetector implements ProjectDetector {
         return projectKey;
     }
     private ProjectKey getProjectKey(String rawProjectName) {
-        String key = rawProjectName.trim().replaceAll("\'", "").replaceAll("\"", "");
+        String key = ProjectDetectorUtil.normalize(rawProjectName);
 
         if (key.contains(":")) {
             ProjectKey projectKey = this.projectInfos.get(key);
