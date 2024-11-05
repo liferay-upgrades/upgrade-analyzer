@@ -56,6 +56,7 @@ public class GradleProjectDetector implements ProjectDetector {
 
         return projectKey;
     }
+    
     private ProjectKey getProjectKey(String rawProjectName) {
         String key = ProjectDetectorUtil.normalize(rawProjectName);
 
