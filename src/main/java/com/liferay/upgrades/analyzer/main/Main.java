@@ -2,6 +2,7 @@ package com.liferay.upgrades.analyzer.main;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
 import com.liferay.upgrades.analyzer.project.dependency.detector.GradleProjectDetector;
+import com.liferay.upgrades.analyzer.project.dependency.detector.JSPortletProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.detector.MavenProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.detector.ThemeProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
@@ -30,7 +31,7 @@ public class Main {
         }
 
         ProjectDependencyAnalyzer gradleProjectDependencyAnalyzer = new ProjectDependencyAnalyzer(
-                List.of(new GradleProjectDetector(), new MavenProjectDetector(), new ThemeProjectDetector()));
+                List.of(new GradleProjectDetector(), new MavenProjectDetector(), new ThemeProjectDetector(), new JSPortletProjectDetector()));
 
         ProjectsDependencyGraph projectsDependencyGraph = gradleProjectDependencyAnalyzer.analyze(exportOptions.directory);
 
