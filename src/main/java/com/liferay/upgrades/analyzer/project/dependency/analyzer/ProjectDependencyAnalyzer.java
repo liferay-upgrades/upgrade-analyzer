@@ -3,6 +3,8 @@ package com.liferay.upgrades.analyzer.project.dependency.analyzer;
 import com.liferay.upgrades.analyzer.project.dependency.detector.ProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -46,10 +48,13 @@ public class ProjectDependencyAnalyzer {
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (NoSuchFileException noSuchFileExceptionSuchFileException) {
-            System.out.println(rootProjectPath + " directory is not available");
+        }
+        catch (NoSuchFileException noSuchFileExceptionSuchFileException) {
+            logger.error(rootProjectPath + " directory is not available", noSuchFileExceptionSuchFileException);
+        }
+        catch (IOException e) {
+            logger.error(e, e);
 
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -70,4 +75,6 @@ public class ProjectDependencyAnalyzer {
         _SKIP_FOLDERS.add("build");
         _SKIP_FOLDERS.add("node_modules");
     }
+
+    private static Logger logger = LogManager.getLogger(ProjectDependencyAnalyzer.class);
 }

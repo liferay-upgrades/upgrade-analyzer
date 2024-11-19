@@ -2,8 +2,8 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 group = 'com.liferay.upgrades'
 version = '2.0.3'
 
@@ -14,6 +14,8 @@ repositories {
 dependencies {
     implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation group: 'org.json', name: 'json', version: '20240303'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -21,6 +23,7 @@ dependencies {
 
 jar {
     project.version=""
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes(
                 'Main-Class': 'com.liferay.upgrades.analyzer.main.Main'
