@@ -17,7 +17,7 @@ public class JSPortletProjectDetector implements ProjectDetector {
     }
 
     @Override
-    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(
                 _getProjectKey(file),  Collections.emptySet());
     }
@@ -32,7 +32,7 @@ public class JSPortletProjectDetector implements ProjectDetector {
     }
 
     private boolean _validateJsonContent(Path contentPath) {
-        String jsonContent = ProjectDetectorUtil.readFile(contentPath);
+            String jsonContent = ProjectDetectorUtil.readFile(contentPath);
 
         if (jsonContent.isEmpty()) {
             return false;

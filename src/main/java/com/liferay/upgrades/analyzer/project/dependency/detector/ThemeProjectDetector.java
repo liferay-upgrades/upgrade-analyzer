@@ -26,7 +26,7 @@ public class ThemeProjectDetector implements ProjectDetector {
     }
 
     @Override
-    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(getThemeProjectKey(file), Collections.emptySet());
     }
 

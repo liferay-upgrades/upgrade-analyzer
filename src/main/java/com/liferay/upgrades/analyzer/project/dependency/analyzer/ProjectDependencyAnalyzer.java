@@ -39,7 +39,7 @@ public class ProjectDependencyAnalyzer {
 
                     for (ProjectDetector projectDetector : projectDetectors) {
                         if (projectDetector.matches(fileName, file)) {
-                            projectDetector.detect(file, projectsDependencyGraphBuilder);
+                            projectDetector.process(file, projectsDependencyGraphBuilder);
                         }
                     }
 
@@ -54,7 +54,7 @@ public class ProjectDependencyAnalyzer {
         }
 
         for (ProjectDetector projectDetector : projectDetectors) {
-            projectDetector.finalize(projectsDependencyGraphBuilder);
+            projectDetector.postProcess(projectsDependencyGraphBuilder);
         }
 
         return projectsDependencyGraphBuilder.build();
@@ -69,6 +69,5 @@ public class ProjectDependencyAnalyzer {
         _SKIP_FOLDERS.add("bin");
         _SKIP_FOLDERS.add("build");
         _SKIP_FOLDERS.add("node_modules");
-
     }
 }
