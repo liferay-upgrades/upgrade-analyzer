@@ -28,7 +28,7 @@ public class GradleProjectDetector implements ProjectDetector {
     }
 
     @Override
-    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(
                 getProjectKey(
                         file.getParent().toUri().getPath(),

@@ -8,7 +8,7 @@ public interface ProjectDetector {
 
     public boolean matches(String fileName, Path file);
 
-    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder);
+    public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder);
 
-    public default void finalize(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {}
+    public default void postProcess(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {}
 }

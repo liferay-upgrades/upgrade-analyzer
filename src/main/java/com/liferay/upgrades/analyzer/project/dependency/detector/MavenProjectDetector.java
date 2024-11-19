@@ -34,12 +34,12 @@ public class MavenProjectDetector implements ProjectDetector {
     }
 
     @Override
-    public void detect(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         collect(file);
     }
 
     @Override
-    public void finalize(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
+    public void postProcess(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         for (Map.Entry<String, Set<String>> module : modules.entrySet()) {
             projectsDependencyGraphBuilder.addProject(
                 new ProjectKey(module.getKey(), modulesPath.get(module.getKey())),
