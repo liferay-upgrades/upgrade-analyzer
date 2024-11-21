@@ -1,5 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
+import com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
@@ -8,40 +9,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil.visitConsumers;
 
 public class CsvProjectDependencyExporter implements ProjectDependencyExporter<String> {
     @Override
     public String export(ProjectsDependencyGraph projectsDependencyGraph) {
-
-        visitConsumers(1, projectsDependencyGraph.getLeaves(), (level, project) -> {
-            Set<Project> projects = _projectsMapLevels.computeIfAbsent(level, key -> new HashSet<>());
-
-            for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
-
-                if (entry.getValue().contains(project)) {
-                    if (entry.getKey() <= level) {
-                        entry.getValue().remove(project);
-                        break;
-                    }
-                    else {
-                        return;
-                    }
-                }
-            }
-
-            projects.add(project);
-        });
-
         StringBuilder sb = new StringBuilder();
 
         sb.append("Level," +
@@ -56,22 +32,18 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
                 "Obs");
         sb.append("\n");
 
-        Comparator<Project> projectsComparator = Comparator.comparingInt(
-                (Project p1) -> -p1.getConsumers().size()
-        ).thenComparing(
-                Project::getName
-        );
-
         int level = 1;
 
-        for (Map.Entry<Integer, Set<Project>> entry : _projectsMapLevels.entrySet()) {
+        Map<Integer, Set<Project>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
+
+        for (Map.Entry<Integer, Set<Project>> entry : projectsMapLevels.entrySet()) {
             List<Project> projects = new ArrayList<>(entry.getValue());
 
             if (projects.size() == 0) {
                 continue;
             }
 
-            Collections.sort(projects, projectsComparator);
+            Collections.sort(projects, ExporterUtil.getProjectsComparator());
 
             for (Project project : projects) {
                 sb.append(level);
@@ -121,6 +93,4 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
         return "CSV file generated at " + csvFile.getAbsolutePath();
     }
 
-
-    private Map<Integer, Set<Project>> _projectsMapLevels = new TreeMap<>();
 }
