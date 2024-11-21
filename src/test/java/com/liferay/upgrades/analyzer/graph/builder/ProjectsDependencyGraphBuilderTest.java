@@ -147,6 +147,4 @@ public class ProjectsDependencyGraphBuilderTest {
         Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
     }
 
-
-
 }
