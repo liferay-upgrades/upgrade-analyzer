@@ -2,6 +2,8 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter.util;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -41,9 +43,11 @@ public class ExporterUtil {
 
         Stack<Project> currentLevel = new Stack<>();
 
+        long startTime = System.currentTimeMillis();
+
         projectsDependencyGraph.getLeaves().forEach(currentLevel::push);
 
-        Stack<Project> nextLevel = new Stack<>();
+        Set<Project> nextLevel = new HashSet<>();
 
         int level = 1;
 
@@ -55,7 +59,8 @@ public class ExporterUtil {
             allProjects.add(project);
 
             if (checkLevels(level, project, projectsMapLevels)) {
-                Set<Project> currentLevelProjects = projectsMapLevels.computeIfAbsent(level, key -> new HashSet<>());
+                Set<Project> currentLevelProjects = projectsMapLevels.computeIfAbsent(
+                        level, key -> new HashSet<>());
 
                 currentLevelProjects.add(project);
             }
@@ -63,10 +68,14 @@ public class ExporterUtil {
             if (currentLevel.isEmpty()) {
                 currentLevel.addAll(nextLevel);
 
-                nextLevel.removeAllElements();
+                nextLevel.clear();
 
                 level++;
             }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Time Elapsed to create the project levels: " + (System.currentTimeMillis() - startTime) + "ms");
         }
 
         return projectsMapLevels;
@@ -98,4 +107,6 @@ public class ExporterUtil {
     ).thenComparing(
             Project::getName
     );
+
+    private static Logger logger = LogManager.getLogger(ExporterUtil.class);
 }
