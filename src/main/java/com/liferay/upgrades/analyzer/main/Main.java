@@ -1,16 +1,16 @@
 package com.liferay.upgrades.analyzer.main;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
+import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectStartupUniquifier;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.ModuleDeployer;
 import com.liferay.upgrades.analyzer.project.dependency.detector.GradleProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.detector.JSPortletProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.detector.MavenProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.detector.ThemeProjectDetector;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.DOTProjectDependencyExporter;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.GamePlanProjectDependencyExporter;
+import com.liferay.upgrades.analyzer.project.dependency.exporter.*;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -21,12 +21,13 @@ public class Main {
     public static void main(String[] args) {
         ExportOptions exportOptions = resolveOptions(args);
 
-        if (!exportOptions.gamePlan && !exportOptions.dotGraph && !exportOptions.moduleDeployer) {
+        if (!exportOptions.gamePlan && !exportOptions.dotGraph && !exportOptions.moduleDeployer  && !exportOptions.startupGamePlan) {
             StringBuilder sb = new StringBuilder();
 
             sb.append("The available options are:\n");
             sb.append("\t--dot-graph or -d to export in the DOT graph format\n");
             sb.append("\t--game-plan or -p to export the game plan\n");
+            sb.append("\t--startup-game-plan or -stp to export the startup game plan\n");
             sb.append("\t--module-deploy or -md to deploy a module and its submodules\n");
             sb.append("\tIn the -md option you need to specify the path to the module you want to deploy, ie. -md /path/to/workspace/modules/lorem-ipsum-module\n");
             sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
@@ -51,15 +52,23 @@ public class Main {
 
             ProjectsDependencyGraph projectsDependencyGraph = gradleProjectDependencyAnalyzer.analyze(exportOptions.directory);
 
-            if (exportOptions.gamePlan) {
+            if  (exportOptions.gamePlan) {
                 System.out.println(new GamePlanProjectDependencyExporter().export(projectsDependencyGraph));
+                System.out.println(new CsvProjectDependencyExporter().export(projectsDependencyGraph));
             }
 
             if (exportOptions.dotGraph) {
                 System.out.println(new DOTProjectDependencyExporter().export(projectsDependencyGraph));
+                System.out.println(new CsvProjectDependencyExporter().export(projectsDependencyGraph));
             }
 
-            System.out.println(new CsvProjectDependencyExporter().export(projectsDependencyGraph));
+            if(exportOptions.startupGamePlan){
+                List<List<Project>> uniqueProjects = new ProjectStartupUniquifier().uniquify(projectsDependencyGraph);
+                System.out.println(new StartupGamePlanProjectDependecyExporter().export(uniqueProjects));
+                System.out.println(new StartupCsvProjectDependencyExporter().export(uniqueProjects));
+            }
+
+
         }
 
     }
@@ -85,10 +94,12 @@ public class Main {
                 exportOptions.directory = args[i + 1];
                 i++;
             } else if (arg.equals("--module-deploy") || arg.equals("-md")){
-            exportOptions.moduleDeployer=true;
-            exportOptions.directory = args[i + 1];
-            i++;
-        }
+                exportOptions.moduleDeployer=true;
+                exportOptions.directory = args[i + 1];
+                i++;
+            } else if (arg.equals("--startup-game-plan") || arg.equals("-stp")){
+                exportOptions.startupGamePlan =true;
+            }
         }
 
         return exportOptions;
@@ -100,9 +111,11 @@ public class Main {
 
         boolean gamePlan;
 
+        boolean startupGamePlan = true;
+
         boolean moduleDeployer;
 
-        String directory;
+        String directory = "/home/me/dev/upgrades/lfrupg-brinks-7.2";
 
     }
 
