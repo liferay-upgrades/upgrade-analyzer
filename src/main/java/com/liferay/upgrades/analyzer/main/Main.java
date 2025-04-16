@@ -111,11 +111,11 @@ public class Main {
 
         boolean gamePlan;
 
-        boolean startupGamePlan = true;
+        boolean startupGamePlan;
 
         boolean moduleDeployer;
 
-        String directory = "/home/me/dev/upgrades/lfrupg-brinks-7.2";
+        String directory;
 
     }
 
