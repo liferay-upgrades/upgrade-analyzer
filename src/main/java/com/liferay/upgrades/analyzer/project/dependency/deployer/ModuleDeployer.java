@@ -12,17 +12,15 @@ import java.util.regex.Pattern;
 public class ModuleDeployer {
 
     public String scriptFactory(Path gradleFile){
-        Matcher matcher = ROOT_PROJECT_PATTERN.matcher(
-                gradleFile.toString()
-        );
-        String rootDirectory;
-        if(matcher.find()){
-            rootDirectory = matcher.group();
-            return recursiveScriptFactory(gradleFile,rootDirectory);
+        Matcher matcher = ROOT_PROJECT_PATTERN.matcher(gradleFile.toString());
+
+        if (matcher.find()) {
+            String rootDirectory = matcher.group();
+
+            return recursiveScriptFactory(gradleFile, rootDirectory);
         }
-        else{
-            return null;
-        }
+
+        return null;
     }
 
     public String recursiveScriptFactory(Path gradleFile, String rootDirectory){
@@ -81,10 +79,11 @@ public class ModuleDeployer {
         return projectInfos.computeIfAbsent(key, name -> new ProjectKey(key));
     }
 
-    private Map<String, ProjectKey> projectInfos = new HashMap<>();
+    private final Map<String, ProjectKey> projectInfos = new HashMap<>();
 
     private static final Pattern MODULES_DIRECTORY_PROJECT_PATTERN =   Pattern.compile(".*modules.*/");
 
     private static final Pattern ROOT_PROJECT_PATTERN = Pattern.compile(".*(?=/modules/)");
     private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile("project.*\\(*[\"'](.*)[\"']\\)");
+
 }
