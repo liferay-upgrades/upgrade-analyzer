@@ -29,7 +29,7 @@ public class ModuleDeployer {
                 ProjectDetectorUtil.readFile(gradleFile));
         List<ProjectKey> projectKeys = new ArrayList<ProjectKey>();
         while(matcher.find()){
-            projectKeys.add(getProjectKey(matcher.group(1)));
+            projectKeys.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
         }
         String directoryPath = gradleFile.toString().substring(0,gradleFile.toString().length()-12);
         if(projectKeys.isEmpty()) return "cd "+ directoryPath + "\nblade gw clean deploy\n";
@@ -49,41 +49,12 @@ public class ModuleDeployer {
 
     }
 
-    private ProjectKey getProjectKey(String rawProjectName) {
-        String key = ProjectDetectorUtil.normalize(rawProjectName);
-
-        if (key.contains(":")) {
-            ProjectKey projectKey = this.projectInfos.get(key);
-
-            if (projectKey != null) {
-                return projectKey;
-            }
-
-            String name = key.substring(key.lastIndexOf(":") + 1);
-
-            projectKey = this.projectInfos.remove(name);
-
-            if (projectKey == null) {
-                projectKey = new ProjectKey(name);
-            }
-
-            projectKey.setName(name);
-            projectKey.setKey(key);
-            projectKey.setGroup(key.substring(0, key.lastIndexOf(":")));
-
-            this.projectInfos.put(key, projectKey);
-            this.projectInfos.put(name, projectKey);
-
-            return projectKey;
-        }
-        return projectInfos.computeIfAbsent(key, name -> new ProjectKey(key));
-    }
-
     private final Map<String, ProjectKey> projectInfos = new HashMap<>();
 
-    private static final Pattern MODULES_DIRECTORY_PROJECT_PATTERN =   Pattern.compile(".*modules.*/");
+    private static final Pattern ROOT_PROJECT_PATTERN = Pattern.compile(
+        ".*(?=/modules/)");
 
-    private static final Pattern ROOT_PROJECT_PATTERN = Pattern.compile(".*(?=/modules/)");
-    private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile("project.*\\(*[\"'](.*)[\"']\\)");
+    private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile(
+        "project.*\\(*[\"'](.*)[\"']\\)");
 
 }

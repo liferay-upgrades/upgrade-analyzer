@@ -58,37 +58,11 @@ public class GradleProjectDetector implements ProjectDetector {
     }
     
     private ProjectKey getProjectKey(String rawProjectName) {
-        String key = ProjectDetectorUtil.normalize(rawProjectName);
-
-        if (key.contains(":")) {
-            ProjectKey projectKey = this.projectInfos.get(key);
-
-            if (projectKey != null) {
-                return projectKey;
-            }
-
-            String name = key.substring(key.lastIndexOf(":") + 1);
-
-            projectKey = this.projectInfos.remove(name);
-
-            if (projectKey == null) {
-                projectKey = new ProjectKey(name);
-            }
-
-            projectKey.setName(name);
-            projectKey.setKey(key);
-            projectKey.setGroup(key.substring(0, key.lastIndexOf(":")));
-
-            this.projectInfos.put(key, projectKey);
-            this.projectInfos.put(name, projectKey);
-
-            return projectKey;
-        }
-
-        return projectInfos.computeIfAbsent(key, name -> new ProjectKey(key));
+       return ProjectDetectorUtil.getProjectKey(rawProjectName, projectInfos);
     }
 
-    private Map<String, ProjectKey> projectInfos = new HashMap<>();
+    private final Map<String, ProjectKey> projectInfos = new HashMap<>();
 
-    private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile("project.*\\(*[\"'](.*)[\"']\\)");
+    private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile(
+        "project.*\\(*[\"'](.*)[\"']\\)");
 }
