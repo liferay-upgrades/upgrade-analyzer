@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StartupCsvProjectDependencyExporter {
+
     private final Map<Integer,String> startupLevelsTitle = new HashMap<Integer, String>(){{
         put(0,"Services and APIs");
         put(1,"Utils");
@@ -20,6 +21,7 @@ public class StartupCsvProjectDependencyExporter {
         put(4,"Fragments");
         put(5,"Others");
     }};
+
     public String export(List<List<Project>> uniqueProjects) {
         StringBuilder sb = new StringBuilder();
 
@@ -36,7 +38,6 @@ public class StartupCsvProjectDependencyExporter {
         sb.append("\n");
 
         int level = 1;
-
 
         for (int i = 0; i < 6; i++) {
             if(!uniqueProjects.get(i).isEmpty()) {
