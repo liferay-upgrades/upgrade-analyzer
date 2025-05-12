@@ -33,7 +33,12 @@ public class ModuleDeployer {
             projectKeys.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
         }
 
-        String directoryPath = gradleFile.toString().substring(0, gradleFile.toString().length() -12);
+        int gradleFileLength = 12;
+
+        String gradleFilePath = gradleFile.toString();
+
+        String directoryPath = gradleFilePath.substring(
+            0, gradleFilePath.length() - gradleFileLength);
 
         if (projectKeys.isEmpty()) {
             return "cd "+ directoryPath + "\nblade gw clean deploy\n";
