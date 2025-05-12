@@ -1,11 +1,10 @@
 package com.liferay.upgrades.analyzer.project.dependency.deployer;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class LocalShell {
@@ -18,19 +17,16 @@ public class LocalShell {
         commands.add("-c");
         commands.add(command);
 
-        BufferedReader br = null;
+        ProcessBuilder processBuilder = new ProcessBuilder(commands);
+        Process process = processBuilder.start();
+        InputStream inputStream = process.getInputStream();
 
-        ProcessBuilder p = new ProcessBuilder(commands);
-        Process process = p.start();
-        InputStream is = process.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        br = new BufferedReader(isr);
+        if (Objects.nonNull(inputStream)) {
+            System.out.println("Executing modules deploy");
 
-        String line;
-        System.out.println("Executing modules deploy");
+            String content = new String(inputStream.readAllBytes());
 
-        while((line = br.readLine()) != null) {
-            System.out.println(line);
+            System.out.printf(content);
         }
     }
 
