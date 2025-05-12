@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        ExportOptions exportOptions = resolveOptions(args);
+        ExportOptions exportOptions = _resolveOptions(args);
 
         if (!exportOptions.gamePlan && !exportOptions.dotGraph &&
                 !exportOptions.startupGamePlan && !exportOptions.moduleDeployer) {
@@ -91,7 +91,7 @@ public class Main {
 
     }
 
-    private static ExportOptions resolveOptions(String[] args) {
+    private static ExportOptions _resolveOptions(String[] args) {
         ExportOptions exportOptions = new ExportOptions();
 
         if (args.length == 1 && !args[0].isBlank()) {
@@ -113,7 +113,7 @@ public class Main {
                 i++;
             }
             else if (arg.equals("--module-deploy") || arg.equals("-md")){
-                exportOptions.moduleDeployer=true;
+                exportOptions.moduleDeployer = true;
                 exportOptions.directory = args[i + 1];
                 i++;
             }
