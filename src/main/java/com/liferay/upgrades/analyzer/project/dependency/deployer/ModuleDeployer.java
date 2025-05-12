@@ -17,36 +17,43 @@ public class ModuleDeployer {
         if (matcher.find()) {
             String rootDirectory = matcher.group();
 
-            return recursiveScriptFactory(gradleFile, rootDirectory);
+            return _recursiveScriptFactory(gradleFile, rootDirectory);
         }
 
         return null;
     }
 
-    public String recursiveScriptFactory(Path gradleFile, String rootDirectory){
-
+    private String _recursiveScriptFactory(Path gradleFile, String rootDirectory){
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
-                ProjectDetectorUtil.readFile(gradleFile));
+            ProjectDetectorUtil.readFile(gradleFile));
+
         List<ProjectKey> projectKeys = new ArrayList<ProjectKey>();
-        while(matcher.find()){
+
+        while (matcher.find()) {
             projectKeys.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
         }
-        String directoryPath = gradleFile.toString().substring(0,gradleFile.toString().length()-12);
-        if(projectKeys.isEmpty()) return "cd "+ directoryPath + "\nblade gw clean deploy\n";
+
+        String directoryPath = gradleFile.toString().substring(0, gradleFile.toString().length() -12);
+
+        if (projectKeys.isEmpty()) {
+            return "cd "+ directoryPath + "\nblade gw clean deploy\n";
+        }
         else {
-            StringBuilder retorno = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
+
             for (ProjectKey projectKey : projectKeys) {
-                retorno.append(
-                        recursiveScriptFactory(
-                                Paths.get(rootDirectory + projectKey.getKey().replace(":", "/") + "/build.gradle"),
-                                rootDirectory
-                        )
+                gradleFile = Paths.get(rootDirectory +
+                    projectKey.getKey().replace(":", "/") + "/build.gradle");
+
+                sb.append(
+                    _recursiveScriptFactory(gradleFile, rootDirectory)
                 );
             }
-            retorno.append("cd ").append(directoryPath).append("\nblade gw clean deploy\n");
-            return retorno.toString();
-        }
 
+            sb.append("cd ").append(directoryPath).append("\nblade gw clean deploy\n");
+
+            return sb.toString();
+        }
     }
 
     private final Map<String, ProjectKey> projectInfos = new HashMap<>();
