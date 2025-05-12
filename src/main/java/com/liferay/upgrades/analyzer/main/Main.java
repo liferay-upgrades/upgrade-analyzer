@@ -32,7 +32,7 @@ public class Main {
             sb.append("\t--startup-game-plan or -stp to export the startup game plan\n");
             sb.append("\t--module-deploy or -md to deploy a module and its submodules\n");
             sb.append("\tIn the -md option you need to specify the path to the module you want to deploy, ");
-            sb.append("ie. -md /path/to/workspace/modules/lorem-ipsum-module\n")
+            sb.append("ie. -md /path/to/workspace/modules/lorem-ipsum-module\n");
             sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
             sb.append("If just the /path/to/workspace is given, the output will be the same as -p -f /path/to/workspace");
 
@@ -42,15 +42,13 @@ public class Main {
         }
 
         if (exportOptions.moduleDeployer) {
-            LocalShell localShell = new LocalShell();
-
             ModuleDeployer moduleDeployer = new ModuleDeployer();
 
             String script = moduleDeployer.scriptFactory(
                 Paths.get(exportOptions.directory + "/build.gradle"));
 
             try {
-                localShell.executeCommand(script);
+                LocalShell.executeCommand(script);
             }
             catch (IOException ex) {
                 log.severe("Error = " + ex.getMessage());
@@ -141,6 +139,6 @@ public class Main {
 
     }
 
-    private static final Logger log = Logger.getLogger(LocalShell.class.getName());
+    private static final Logger log = Logger.getLogger(Main.class.getName());
 
 }
