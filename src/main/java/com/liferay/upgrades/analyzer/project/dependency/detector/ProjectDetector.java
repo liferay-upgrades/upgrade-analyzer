@@ -11,4 +11,5 @@ public interface ProjectDetector {
     public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder);
 
     public default void postProcess(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {}
+
 }

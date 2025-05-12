@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 public class LocalShell {
 
-    private static final Logger log = Logger.getLogger(LocalShell.class.getName());
-
     public static void executeCommand(String command) throws IOException {
         ArrayList<String> commands = new ArrayList<>();
         commands.add("/bin/bash");
@@ -35,5 +33,7 @@ public class LocalShell {
             resource.close();
         }
     }
+
+    private static final Logger log = Logger.getLogger(LocalShell.class.getName());
 
 }

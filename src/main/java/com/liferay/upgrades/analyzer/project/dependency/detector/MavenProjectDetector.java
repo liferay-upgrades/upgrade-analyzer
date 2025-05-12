@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MavenProjectDetector implements ProjectDetector {
+
     @Override
     public boolean matches(String fileName, Path file) {
 
@@ -107,7 +108,7 @@ public class MavenProjectDetector implements ProjectDetector {
         }
     }
 
-
     private static final Map<String, String> modulesPath = new HashMap<>();
     private static final Map<String, Set<String>> modules = new HashMap<>();
+
 }

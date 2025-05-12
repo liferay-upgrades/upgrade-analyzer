@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GradleProjectDetector implements ProjectDetector {
+
     @Override
     public boolean matches(String fileName, Path file) {
 
@@ -40,7 +41,7 @@ public class GradleProjectDetector implements ProjectDetector {
         Set<ProjectKey> dependencies = new HashSet<>();
 
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
-                ProjectDetectorUtil.readFile(gradleFile));
+            ProjectDetectorUtil.readFile(gradleFile));
 
         while (matcher.find()) {
             dependencies.add(getProjectKey(matcher.group(1)));
@@ -65,4 +66,5 @@ public class GradleProjectDetector implements ProjectDetector {
 
     private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile(
         "project.*\\(*[\"'](.*)[\"']\\)");
+
 }

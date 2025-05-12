@@ -17,17 +17,17 @@ public class ModuleDeployer {
         if (matcher.find()) {
             String rootDirectory = matcher.group();
 
-            return _recursiveScriptFactory(gradleFile, rootDirectory);
+            return _factoryScript(gradleFile, rootDirectory);
         }
 
         return null;
     }
 
-    private String _recursiveScriptFactory(Path gradleFile, String rootDirectory){
+    private String _factoryScript(Path gradleFile, String rootDirectory){
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
             ProjectDetectorUtil.readFile(gradleFile));
 
-        List<ProjectKey> projectKeys = new ArrayList<ProjectKey>();
+        List<ProjectKey> projectKeys = new ArrayList<>();
 
         while (matcher.find()) {
             projectKeys.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
@@ -46,7 +46,7 @@ public class ModuleDeployer {
                     projectKey.getKey().replace(":", "/") + "/build.gradle");
 
                 sb.append(
-                    _recursiveScriptFactory(gradleFile, rootDirectory)
+                    _factoryScript(gradleFile, rootDirectory)
                 );
             }
 
