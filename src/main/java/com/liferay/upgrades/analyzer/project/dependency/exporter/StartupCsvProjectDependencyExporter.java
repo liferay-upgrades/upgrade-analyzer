@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
-import com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil;
+import com.liferay.upgrades.analyzer.project.dependency.exporter.util.StartupGamePlanUtil;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
@@ -11,18 +11,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class StartupCsvProjectDependencyExporter {
+public class StartupCsvProjectDependencyExporter
+    implements ProjectDependencyExporter<String> {
 
-    private final Map<Integer,String> startupLevelsTitle = new HashMap<Integer, String>(){{
-        put(0,"Services and APIs");
-        put(1,"Utils");
-        put(2,"Commons");
-        put(3,"Hooks");
-        put(4,"Fragments");
-        put(5,"Others");
-    }};
+    @Override
+    public String export(ProjectsDependencyGraph projectsDependencyGraph) {
+        List<List<Project>> uniqueProjects =
+            StartupGamePlanUtil.uniquify(projectsDependencyGraph);
 
-    public String export(List<List<Project>> uniqueProjects) {
+        return _export(uniqueProjects);
+    }
+
+    private String _export(List<List<Project>> uniqueProjects) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Level," +
@@ -36,8 +36,6 @@ public class StartupCsvProjectDependencyExporter {
                 "Nº of errors fixed (Total)," +
                 "Obs");
         sb.append("\n");
-
-        int level = 1;
 
         for (int i = 0; i < 6; i++) {
             if(!uniqueProjects.get(i).isEmpty()) {
@@ -74,11 +72,11 @@ public class StartupCsvProjectDependencyExporter {
             }
         }
 
-        long time = System.currentTimeMillis();
+        File csvFile = new File("projects-" + System.currentTimeMillis() + ".csv");
 
-        File csvFile = new File("projects-" + time + ".csv");
+        try (BufferedWriter writer =
+                 new BufferedWriter(new FileWriter(csvFile))) {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
             writer.write(sb.toString());
         }
         catch (Exception e) {
@@ -86,6 +84,17 @@ public class StartupCsvProjectDependencyExporter {
         }
 
         return "CSV file generated at " + csvFile.getAbsolutePath();
+    }
+
+    private static final Map<Integer,String> startupLevelsTitle = new HashMap<>();
+
+    static {
+        startupLevelsTitle.put(0,"Services and APIs");
+        startupLevelsTitle.put(1,"Utils");
+        startupLevelsTitle.put(2,"Commons");
+        startupLevelsTitle.put(3,"Hooks");
+        startupLevelsTitle.put(4,"Fragments");
+        startupLevelsTitle.put(5,"Others");
     }
 
 }

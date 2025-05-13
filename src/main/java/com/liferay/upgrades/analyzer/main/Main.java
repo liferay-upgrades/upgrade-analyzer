@@ -1,7 +1,6 @@
 package com.liferay.upgrades.analyzer.main;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
-import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectStartupUniquifier;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.ModuleDeployer;
 import com.liferay.upgrades.analyzer.project.dependency.detector.GradleProjectDetector;
@@ -79,13 +78,10 @@ public class Main {
             }
 
             if (exportOptions.startupGamePlan) {
-                List<List<Project>> uniqueProjects =
-                    new ProjectStartupUniquifier().uniquify(projectsDependencyGraph);
-
                 System.out.println(
-                    new StartupGamePlanProjectDependecyExporter().export(uniqueProjects));
+                    new StartupGamePlanProjectDependencyExporter().export(projectsDependencyGraph));
                 System.out.println(
-                    new StartupCsvProjectDependencyExporter().export(uniqueProjects));
+                    new StartupCsvProjectDependencyExporter().export(projectsDependencyGraph));
             }
         }
 
