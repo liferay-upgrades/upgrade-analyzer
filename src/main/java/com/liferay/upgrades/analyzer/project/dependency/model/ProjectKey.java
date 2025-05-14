@@ -1,22 +1,11 @@
 package com.liferay.upgrades.analyzer.project.dependency.model;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ProjectKey {
-
-    private String name;
-    private String key;
-    private String group;
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    private String path;
 
     public ProjectKey(String name) {
         this.name = name;
@@ -28,12 +17,28 @@ public class ProjectKey {
         this.path = path;
     }
 
-    public String getName() {
-        return name;
+    public void addConsumer(Project consumer) {
+        this.consumers.add(consumer);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Set<Project> getConsumers() {
+        return consumers;
+    }
+
+    public void addDependency(Project subProject) {
+        this.dependencies.add(subProject);
+    }
+
+    public Set<Project> getDependencies() {
+        return dependencies;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getKey() {
@@ -44,12 +49,20 @@ public class ProjectKey {
         this.key = key;
     }
 
-    public String getGroup() {
-        return group;
+    public String getPath() {
+        return path;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -64,4 +77,20 @@ public class ProjectKey {
     public int hashCode() {
         return Objects.hash(name, key, group);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "{\n \"name\": \"%s\",\n \"dependencies\": %s \n}",
+            name, Arrays.deepToString(consumers.toArray()));
+    }
+
+    private String group;
+    private String key;
+    private String path;
+    private String name;
+
+    private final Set<Project> dependencies = new HashSet<>();
+    private final Set<Project> consumers = new HashSet<>();
+
 }
