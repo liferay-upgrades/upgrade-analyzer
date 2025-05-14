@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,7 +11,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-public class DOTProjectDependencyExporter implements ProjectDependencyExporter<String> {
+public class DOTProjectDependencyExporter
+    implements ProjectDependencyExporter<String> {
+
     @Override
     public String export(ProjectsDependencyGraph projectsDependencyGraph) {
         StringBuilder sb = new StringBuilder();
@@ -21,14 +23,14 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         //for now remove duplications using a Set
         Set<String> lines = new TreeSet<>();
 
-        Stack<Project> stack = new Stack<>();
+        Stack<ProjectKey> stack = new Stack<>();
 
         projectsDependencyGraph.getLeaves().forEach(stack::push);
 
         Set<String> visitedProjects = new HashSet<>();
 
         while (!stack.isEmpty()) {
-            Project currentProject = stack.pop();
+            ProjectKey currentProject = stack.pop();
 
             visitedProjects.add(currentProject.getName());
 
@@ -40,8 +42,8 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
 
             lines.add(currentProjectSB.toString());
 
-            for (Project consumer : currentProject.getConsumers()) {
-                addRelationships(lines, currentProject, consumer);
+            for (ProjectKey consumer : currentProject.getConsumers()) {
+                _addRelationships(lines, currentProject, consumer);
 
                 if (!visitedProjects.contains(consumer.getName())) {
                     stack.push(consumer);
@@ -57,10 +59,10 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         sb.append("\n");
         sb.append("}");
 
-        return generateSvg(sb.toString());
+        return _generateSvg(sb.toString());
     }
 
-    private void addRelationships(Set<String> lines, Project leaf) {
+    private void _addRelationships(Set<String> lines, ProjectKey leaf) {
         if (leaf == null) {
             return;
         }
@@ -73,7 +75,7 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
 
         lines.add(sb.toString());
 
-        for (Project consumer : leaf.getConsumers()) {
+        for (ProjectKey consumer : leaf.getConsumers()) {
             StringBuilder builder = new StringBuilder();
 
             builder.append("\"");
@@ -86,12 +88,31 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
 
             lines.add(builder.toString());
 
-            addRelationships(lines, consumer);
+            _addRelationships(lines, consumer);
         }
     }
 
+    private void _addRelationships(
+        Set<String> lines, ProjectKey leaf, ProjectKey consumer) {
 
-    private static String generateSvg(String dotContent) {
+        if (consumer == null) {
+            return;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("\"");
+        builder.append(consumer.getName());
+        builder.append("\"");
+        builder.append(" -> ");
+        builder.append("\"");
+        builder.append(leaf.getName());
+        builder.append("\"");
+
+        lines.add(builder.toString());
+    }
+
+    private static String _generateSvg(String dotContent) {
         long time = System.currentTimeMillis();
 
         File dotFile = new File("graph-" + time + ".dot");
@@ -130,21 +151,4 @@ public class DOTProjectDependencyExporter implements ProjectDependencyExporter<S
         return result;
     }
 
-    private void addRelationships(Set<String> lines, Project leaf, Project consumer) {
-        if (consumer == null) {
-            return;
-        }
-
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("\"");
-        builder.append(consumer.getName());
-        builder.append("\"");
-        builder.append(" -> ");
-        builder.append("\"");
-        builder.append(leaf.getName());
-        builder.append("\"");
-
-        lines.add(builder.toString());
-    }
 }

@@ -1,19 +1,19 @@
 package com.liferay.upgrades.analyzer.project.dependency.analyzer;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 public class ProjectStartupUniquifier {
-    public List<List<Project>> uniquify(ProjectsDependencyGraph projectsDependencyGraph) {
-        Stack<Project> stack = new Stack<>();
+    public List<List<ProjectKey>> uniquify(ProjectsDependencyGraph projectsDependencyGraph) {
+        Stack<ProjectKey> stack = new Stack<>();
 
         projectsDependencyGraph.getLeaves().forEach(stack::push);
 
-        List<List<Project>> uniqueProjects = new ArrayList<>();
+        List<List<ProjectKey>> uniqueProjects = new ArrayList<>();
 
         uniqueProjects.add(new ArrayList<>());//Services and APIs
         uniqueProjects.add(new ArrayList<>());//Utils
@@ -23,7 +23,7 @@ public class ProjectStartupUniquifier {
         uniqueProjects.add(new ArrayList<>());//Others
 
         while (!stack.isEmpty()) {
-            Project currentProject = stack.pop();
+            ProjectKey currentProject = stack.pop();
 
             boolean isUniqueProject = true;
             for (int i = 0; i < 5 && isUniqueProject; i++) {

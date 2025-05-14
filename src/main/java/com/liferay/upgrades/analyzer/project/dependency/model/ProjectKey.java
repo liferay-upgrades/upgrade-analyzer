@@ -17,19 +17,19 @@ public class ProjectKey {
         this.path = path;
     }
 
-    public void addConsumer(Project consumer) {
+    public void addConsumer(ProjectKey consumer) {
         this.consumers.add(consumer);
     }
 
-    public Set<Project> getConsumers() {
+    public Set<ProjectKey> getConsumers() {
         return consumers;
     }
 
-    public void addDependency(Project subProject) {
+    public void addDependency(ProjectKey subProject) {
         this.dependencies.add(subProject);
     }
 
-    public Set<Project> getDependencies() {
+    public Set<ProjectKey> getDependencies() {
         return dependencies;
     }
 
@@ -90,7 +90,7 @@ public class ProjectKey {
     private String path;
     private String name;
 
-    private final Set<Project> dependencies = new HashSet<>();
-    private final Set<Project> consumers = new HashSet<>();
+    private final Set<ProjectKey> dependencies = new HashSet<>();
+    private final Set<ProjectKey> consumers = new HashSet<>();
 
 }

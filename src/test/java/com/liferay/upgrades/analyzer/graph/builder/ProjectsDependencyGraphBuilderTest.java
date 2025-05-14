@@ -2,13 +2,11 @@ package com.liferay.upgrades.analyzer.graph.builder;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -28,12 +26,11 @@ public class ProjectsDependencyGraphBuilderTest {
                         b,
                         Set.of()).build();
 
-        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+        ArrayList<ProjectKey> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
         Assertions.assertEquals(1, leaves.size());
-        Assertions.assertEquals(b, leaves.get(0).getProjectInfo());
+        Assertions.assertEquals(b, leaves.get(0));
         Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
-
     }
 
     @Test
@@ -71,16 +68,15 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of(new ProjectKey("c"))
                 ).build();
 
-        List<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+        List<ProjectKey> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
-        while (leaves != null && !leaves.isEmpty()) {
+        while (!leaves.isEmpty()) {
             Assertions.assertEquals(1, leaves.size());
 
             leaves = new ArrayList<>(leaves.get(0).getConsumers());
         }
 
         Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
-
     }
 
     /*
@@ -103,14 +99,14 @@ public class ProjectsDependencyGraphBuilderTest {
                         Set.of()
                 ).build();
 
-        Set<Project> leaves = projectsDependencyGraph.getLeaves();
+        Set<ProjectKey> leaves = projectsDependencyGraph.getLeaves();
 
         Assertions.assertEquals(2, leaves.size());
 
-        for (Project leaf : leaves) {
+        for (ProjectKey leaf : leaves) {
             Assertions.assertEquals(0, leaf.getDependencies().size());
             Assertions.assertEquals(1, leaf.getConsumers().size());
-            Assertions.assertEquals(true, leaf.getConsumers().contains(new Project(new ProjectKey("a"))));
+            Assertions.assertTrue(leaf.getConsumers().contains(new ProjectKey("a")));
         }
 
         Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
