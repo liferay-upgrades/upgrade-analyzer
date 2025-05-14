@@ -2,13 +2,12 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,18 +33,18 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
 
         int level = 1;
 
-        Map<Integer, Set<Project>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
+        Map<Integer, Set<ProjectKey>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
 
-        for (Map.Entry<Integer, Set<Project>> entry : projectsMapLevels.entrySet()) {
-            List<Project> projects = new ArrayList<>(entry.getValue());
+        for (Map.Entry<Integer, Set<ProjectKey>> entry : projectsMapLevels.entrySet()) {
+            List<ProjectKey> projects = new ArrayList<>(entry.getValue());
 
-            if (projects.size() == 0) {
+            if (projects.isEmpty()) {
                 continue;
             }
 
-            Collections.sort(projects, ExporterUtil.getProjectsComparator());
+            projects.sort(ExporterUtil.getProjectsComparator());
 
-            for (Project project : projects) {
+            for (ProjectKey project : projects) {
                 sb.append(level);
                 sb.append(",");
                 sb.append(project.getName());

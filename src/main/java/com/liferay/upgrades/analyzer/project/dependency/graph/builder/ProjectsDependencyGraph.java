@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.graph.builder;
 
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,32 +9,31 @@ import java.util.Set;
 
 public class ProjectsDependencyGraph {
 
-
-    public Set<Project> getLeaves() {
-        return Collections.unmodifiableSet(_leaves);
-    }
-
-    protected void addLeaf(Project leaf) {
+    protected void addLeaf(ProjectKey leaf) {
         _leaves.add(leaf);
     }
 
-    protected void removeLeaf(Project leaf) {
+    protected void removeLeaf(ProjectKey leaf) {
         _leaves.remove(leaf);
     }
 
     public int getDepth() {
         if (depth == -1) {
-            depth = computeDepth(_leaves, 0);
+            depth = _computeDepth(_leaves, 0);
         }
 
         return depth;
     }
 
-    private int computeDepth(Collection<Project> projects, int depth) {
+    public Set<ProjectKey> getLeaves() {
+        return Collections.unmodifiableSet(_leaves);
+    }
+
+    private int _computeDepth(Collection<ProjectKey> projects, int depth) {
         int max = depth;
 
-        for (Project project : projects) {
-            int localDepth = computeDepth(project.getConsumers(), depth + 1);
+        for (ProjectKey project : projects) {
+            int localDepth = _computeDepth(project.getConsumers(), depth + 1);
 
             if (localDepth > max) {
                 max = localDepth;
@@ -44,6 +43,7 @@ public class ProjectsDependencyGraph {
         return max;
     }
 
-    private final Set<Project> _leaves = new HashSet<>();
-    private int depth = -1;
+    private int depth  = -1;
+    private final Set<ProjectKey> _leaves = new HashSet<>();
+
 }
