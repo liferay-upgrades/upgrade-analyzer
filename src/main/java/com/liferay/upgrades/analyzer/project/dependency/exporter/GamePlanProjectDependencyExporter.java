@@ -2,7 +2,7 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +19,7 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
     public String export(ProjectsDependencyGraph projectsDependencyGraph) {
         StringBuilder sb = new StringBuilder();
 
-        Map<Integer, Set<ProjectKey>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
+        Map<Integer, Set<Project>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
 
         sb.append("This project contains ")
             .append(ExporterUtil.countProjects(projectsMapLevels))
@@ -30,8 +30,8 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
 
         int level = 1;
 
-        for (Map.Entry<Integer, Set<ProjectKey>> entry : projectsMapLevels.entrySet()) {
-            List<ProjectKey> projects = new ArrayList<>(entry.getValue());
+        for (Map.Entry<Integer, Set<Project>> entry : projectsMapLevels.entrySet()) {
+            List<Project> projects = new ArrayList<>(entry.getValue());
 
             if (projects.isEmpty()) {
                 continue;
@@ -44,7 +44,7 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
 
             projects.sort(ExporterUtil.getProjectsComparator());
 
-            for (ProjectKey project : projects) {
+            for (Project project : projects) {
                 sb.append("\t");
                 sb.append(project.getName())
                     .append(" ")
@@ -66,8 +66,8 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
         return "Game Plan generated at " + gamePlanFile.getAbsolutePath();
     }
 
-    private void _appendDependencies(StringBuilder sb, ProjectKey project) {
-        Set<ProjectKey> dependencies = project.getDependencies();
+    private void _appendDependencies(StringBuilder sb, Project project) {
+        Set<Project> dependencies = project.getDependencies();
 
         if (dependencies.isEmpty()) {
             return;
@@ -77,7 +77,7 @@ public class GamePlanProjectDependencyExporter implements ProjectDependencyExpor
 
         sb.append(
             dependencies.stream().map(
-                ProjectKey::getName
+                Project::getName
             ).collect(
                 Collectors.joining(", ")
             )

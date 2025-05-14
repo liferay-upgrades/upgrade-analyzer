@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.util.ProjectDetectorUtil;
 
 import java.nio.file.Path;
@@ -22,13 +22,13 @@ public class JSPortletProjectDetector implements ProjectDetector {
                 _getProjectKey(file),  Collections.emptySet());
     }
 
-    private ProjectKey _getProjectKey(Path file) {
+    private Project _getProjectKey(Path file) {
         String path = file.getParent().toUri().getPath();
         String fileName = file.getParent().getFileName().toString();
 
         String key = ProjectDetectorUtil.normalize(fileName);
 
-        return new ProjectKey(key, path);
+        return new Project(key, path);
     }
 
     private boolean _validateJsonContent(Path contentPath) {

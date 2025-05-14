@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,14 +23,14 @@ public class DOTProjectDependencyExporter
         //for now remove duplications using a Set
         Set<String> lines = new TreeSet<>();
 
-        Stack<ProjectKey> stack = new Stack<>();
+        Stack<Project> stack = new Stack<>();
 
         projectsDependencyGraph.getLeaves().forEach(stack::push);
 
         Set<String> visitedProjects = new HashSet<>();
 
         while (!stack.isEmpty()) {
-            ProjectKey currentProject = stack.pop();
+            Project currentProject = stack.pop();
 
             visitedProjects.add(currentProject.getName());
 
@@ -42,7 +42,7 @@ public class DOTProjectDependencyExporter
 
             lines.add(currentProjectSB.toString());
 
-            for (ProjectKey consumer : currentProject.getConsumers()) {
+            for (Project consumer : currentProject.getConsumers()) {
                 _addRelationships(lines, currentProject, consumer);
 
                 if (!visitedProjects.contains(consumer.getName())) {
@@ -62,7 +62,7 @@ public class DOTProjectDependencyExporter
         return _generateSvg(sb.toString());
     }
 
-    private void _addRelationships(Set<String> lines, ProjectKey leaf) {
+    private void _addRelationships(Set<String> lines, Project leaf) {
         if (leaf == null) {
             return;
         }
@@ -75,7 +75,7 @@ public class DOTProjectDependencyExporter
 
         lines.add(sb.toString());
 
-        for (ProjectKey consumer : leaf.getConsumers()) {
+        for (Project consumer : leaf.getConsumers()) {
             StringBuilder builder = new StringBuilder();
 
             builder.append("\"");
@@ -93,7 +93,7 @@ public class DOTProjectDependencyExporter
     }
 
     private void _addRelationships(
-        Set<String> lines, ProjectKey leaf, ProjectKey consumer) {
+            Set<String> lines, Project leaf, Project consumer) {
 
         if (consumer == null) {
             return;

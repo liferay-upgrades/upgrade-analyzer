@@ -2,7 +2,7 @@ package com.liferay.upgrades.analyzer.graph.builder;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,17 +16,17 @@ public class ProjectsDependencyGraphBuilderTest {
     public void testADependsOnB() {
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
-        ProjectKey b = new ProjectKey("b");
+        Project b = new Project("b");
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectKey("a"),
+                        new Project("a"),
                         Set.of(b))
                 .addProject(
                         b,
                         Set.of()).build();
 
-        ArrayList<ProjectKey> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
         Assertions.assertEquals(1, leaves.size());
         Assertions.assertEquals(b, leaves.get(0));
@@ -39,13 +39,13 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectKey("a"),
+                        new Project("a"),
                         Set.of())
                 .addProject(
-                        new ProjectKey("b"),
+                        new Project("b"),
                         Set.of())
                 .addProject(
-                        new ProjectKey("c"),
+                        new Project("c"),
                         Set.of()).build();
 
         Assertions.assertEquals(3, projectsDependencyGraph.getLeaves().size());
@@ -61,14 +61,14 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectKey("a"),
-                        Set.of(new ProjectKey("b")))
+                        new Project("a"),
+                        Set.of(new Project("b")))
                 .addProject(
-                        new ProjectKey("b"),
-                        Set.of(new ProjectKey("c"))
+                        new Project("b"),
+                        Set.of(new Project("c"))
                 ).build();
 
-        List<ProjectKey> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+        List<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
 
         while (!leaves.isEmpty()) {
             Assertions.assertEquals(1, leaves.size());
@@ -89,24 +89,24 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectKey("a"),
-                        Set.of(new ProjectKey("b"), new ProjectKey("c")))
+                        new Project("a"),
+                        Set.of(new Project("b"), new Project("c")))
                 .addProject(
-                        new ProjectKey("b"),
+                        new Project("b"),
                         Set.of())
                 .addProject(
-                        new ProjectKey("c"),
+                        new Project("c"),
                         Set.of()
                 ).build();
 
-        Set<ProjectKey> leaves = projectsDependencyGraph.getLeaves();
+        Set<Project> leaves = projectsDependencyGraph.getLeaves();
 
         Assertions.assertEquals(2, leaves.size());
 
-        for (ProjectKey leaf : leaves) {
+        for (Project leaf : leaves) {
             Assertions.assertEquals(0, leaf.getDependencies().size());
             Assertions.assertEquals(1, leaf.getConsumers().size());
-            Assertions.assertTrue(leaf.getConsumers().contains(new ProjectKey("a")));
+            Assertions.assertTrue(leaf.getConsumers().contains(new Project("a")));
         }
 
         Assertions.assertEquals(2, projectsDependencyGraph.getDepth());
@@ -118,26 +118,26 @@ public class ProjectsDependencyGraphBuilderTest {
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
                 .addProject(
-                        new ProjectKey("search-portlet"),
-                        Set.of(new ProjectKey("employee-api"), new ProjectKey("employee-web")))
+                        new Project("search-portlet"),
+                        Set.of(new Project("employee-api"), new Project("employee-web")))
                 .addProject(
-                        new ProjectKey("employee-api"),
+                        new Project("employee-api"),
                         Set.of())
                 .addProject(
-                        new ProjectKey("employee-web"),
-                        Set.of(new ProjectKey("webservice-core")))
+                        new Project("employee-web"),
+                        Set.of(new Project("webservice-core")))
                 .addProject(
-                        new ProjectKey("leave-portlet"),
-                        Set.of(new ProjectKey("webservice-core")))
+                        new Project("leave-portlet"),
+                        Set.of(new Project("webservice-core")))
                 .addProject(
-                        new ProjectKey("favorite-assets"),
-                        Set.of(new ProjectKey("employee-api")))
+                        new Project("favorite-assets"),
+                        Set.of(new Project("employee-api")))
                 .addProject(
-                        new ProjectKey("employee-portal-language"),
+                        new Project("employee-portal-language"),
                         Set.of())
                 .addProject(
-                        new ProjectKey("to-do-portlet"),
-                        Set.of(new ProjectKey("webservice-core"))
+                        new Project("to-do-portlet"),
+                        Set.of(new Project("webservice-core"))
                 ).build();
 
         Assertions.assertEquals(3, projectsDependencyGraph.getDepth());

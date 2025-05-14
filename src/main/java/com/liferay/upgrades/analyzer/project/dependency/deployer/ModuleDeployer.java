@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.deployer;
 
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.util.ProjectDetectorUtil;
 
 import java.nio.file.Path;
@@ -27,10 +27,10 @@ public class ModuleDeployer {
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
             ProjectDetectorUtil.readFile(gradleFile));
 
-        List<ProjectKey> projectKeys = new ArrayList<>();
+        List<Project> projects = new ArrayList<>();
 
         while (matcher.find()) {
-            projectKeys.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
+            projects.add(ProjectDetectorUtil.getProjectKey(matcher.group(1), projectInfos));
         }
 
         int gradleFileLength = 12;
@@ -40,15 +40,15 @@ public class ModuleDeployer {
         String directoryPath = gradleFilePath.substring(
             0, gradleFilePath.length() - gradleFileLength);
 
-        if (projectKeys.isEmpty()) {
+        if (projects.isEmpty()) {
             return "cd "+ directoryPath + "\nblade gw clean deploy\n";
         }
         else {
             StringBuilder sb = new StringBuilder();
 
-            for (ProjectKey projectKey : projectKeys) {
+            for (Project project : projects) {
                 gradleFile = Paths.get(rootDirectory +
-                    projectKey.getKey().replace(":", "/") + "/build.gradle");
+                    project.getKey().replace(":", "/") + "/build.gradle");
 
                 sb.append(
                     _factoryScript(gradleFile, rootDirectory)
@@ -61,7 +61,7 @@ public class ModuleDeployer {
         }
     }
 
-    private final Map<String, ProjectKey> projectInfos = new HashMap<>();
+    private final Map<String, Project> projectInfos = new HashMap<>();
 
     private static final Pattern ROOT_PROJECT_PATTERN = Pattern.compile(
         ".*(?=/modules/)");
