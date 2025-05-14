@@ -2,7 +2,7 @@ package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
 import com.liferay.upgrades.analyzer.project.dependency.exporter.util.ExporterUtil;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,10 +33,10 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
 
         int level = 1;
 
-        Map<Integer, Set<ProjectKey>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
+        Map<Integer, Set<Project>> projectsMapLevels = ExporterUtil.createProjectLevel(projectsDependencyGraph);
 
-        for (Map.Entry<Integer, Set<ProjectKey>> entry : projectsMapLevels.entrySet()) {
-            List<ProjectKey> projects = new ArrayList<>(entry.getValue());
+        for (Map.Entry<Integer, Set<Project>> entry : projectsMapLevels.entrySet()) {
+            List<Project> projects = new ArrayList<>(entry.getValue());
 
             if (projects.isEmpty()) {
                 continue;
@@ -44,7 +44,7 @@ public class CsvProjectDependencyExporter implements ProjectDependencyExporter<S
 
             projects.sort(ExporterUtil.getProjectsComparator());
 
-            for (ProjectKey project : projects) {
+            for (Project project : projects) {
                 sb.append(level);
                 sb.append(",");
                 sb.append(project.getName());

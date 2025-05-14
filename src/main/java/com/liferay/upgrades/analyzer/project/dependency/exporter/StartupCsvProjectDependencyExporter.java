@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,7 +20,7 @@ public class StartupCsvProjectDependencyExporter {
         put(5,"Others");
     }};
 
-    public String export(List<List<ProjectKey>> uniqueProjects) {
+    public String export(List<List<Project>> uniqueProjects) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Level," +
@@ -39,7 +39,7 @@ public class StartupCsvProjectDependencyExporter {
 
         for (int i = 0; i < 6; i++) {
             if(!uniqueProjects.get(i).isEmpty()) {
-                for (ProjectKey project : uniqueProjects.get(i)) {
+                for (Project project : uniqueProjects.get(i)) {
                     sb.append(startupLevelsTitle.get(i));
                     sb.append(",");
                     sb.append(project.getName());

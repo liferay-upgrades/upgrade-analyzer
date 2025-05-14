@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.graph.builder;
 
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,11 +9,11 @@ import java.util.Set;
 
 public class ProjectsDependencyGraph {
 
-    protected void addLeaf(ProjectKey leaf) {
+    protected void addLeaf(Project leaf) {
         _leaves.add(leaf);
     }
 
-    protected void removeLeaf(ProjectKey leaf) {
+    protected void removeLeaf(Project leaf) {
         _leaves.remove(leaf);
     }
 
@@ -25,14 +25,14 @@ public class ProjectsDependencyGraph {
         return depth;
     }
 
-    public Set<ProjectKey> getLeaves() {
+    public Set<Project> getLeaves() {
         return Collections.unmodifiableSet(_leaves);
     }
 
-    private int _computeDepth(Collection<ProjectKey> projects, int depth) {
+    private int _computeDepth(Collection<Project> projects, int depth) {
         int max = depth;
 
-        for (ProjectKey project : projects) {
+        for (Project project : projects) {
             int localDepth = _computeDepth(project.getConsumers(), depth + 1);
 
             if (localDepth > max) {
@@ -44,6 +44,6 @@ public class ProjectsDependencyGraph {
     }
 
     private int depth  = -1;
-    private final Set<ProjectKey> _leaves = new HashSet<>();
+    private final Set<Project> _leaves = new HashSet<>();
 
 }

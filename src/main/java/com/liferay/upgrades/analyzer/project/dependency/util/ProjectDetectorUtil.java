@@ -1,6 +1,6 @@
 package com.liferay.upgrades.analyzer.project.dependency.util;
 
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.BufferedReader;
 import java.nio.charset.StandardCharsets;
@@ -10,37 +10,37 @@ import java.util.Map;
 
 public class ProjectDetectorUtil {
 
-    public static ProjectKey getProjectKey(
-        String rawProjectName, Map<String, ProjectKey> projectInfos) {
+    public static Project getProjectKey(
+        String rawProjectName, Map<String, Project> projectInfos) {
 
         String key = ProjectDetectorUtil.normalize(rawProjectName);
 
         if (key.contains(":")) {
-            ProjectKey projectKey = projectInfos.get(key);
+            Project project = projectInfos.get(key);
 
-            if (projectKey != null) {
-                return projectKey;
+            if (project != null) {
+                return project;
             }
 
             String name = key.substring(key.lastIndexOf(":") + 1);
 
-            projectKey = projectInfos.remove(name);
+            project = projectInfos.remove(name);
 
-            if (projectKey == null) {
-                projectKey = new ProjectKey(name);
+            if (project == null) {
+                project = new Project(name);
             }
 
-            projectKey.setName(name);
-            projectKey.setKey(key);
-            projectKey.setGroup(key.substring(0, key.lastIndexOf(":")));
+            project.setName(name);
+            project.setKey(key);
+            project.setGroup(key.substring(0, key.lastIndexOf(":")));
 
-            projectInfos.put(key, projectKey);
-            projectInfos.put(name, projectKey);
+            projectInfos.put(key, project);
+            projectInfos.put(name, project);
 
-            return projectKey;
+            return project;
         }
 
-        return projectInfos.computeIfAbsent(key, name -> new ProjectKey(key));
+        return projectInfos.computeIfAbsent(key, name -> new Project(key));
     }
 
     public static String normalize(String key) {

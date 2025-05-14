@@ -10,7 +10,7 @@ import com.liferay.upgrades.analyzer.project.dependency.detector.MavenProjectDet
 import com.liferay.upgrades.analyzer.project.dependency.detector.ThemeProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.*;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -79,7 +79,7 @@ public class Main {
             }
 
             if (exportOptions.startupGamePlan) {
-                List<List<ProjectKey>> uniqueProjects =
+                List<List<Project>> uniqueProjects =
                     new ProjectStartupUniquifier().uniquify(projectsDependencyGraph);
 
                 System.out.println(

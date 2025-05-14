@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.util.ProjectDetectorUtil;
 
 import java.nio.file.Files;
@@ -37,8 +37,8 @@ public class GradleProjectDetector implements ProjectDetector {
                 collectProjectDependencies(file));
     }
 
-    private Set<ProjectKey> collectProjectDependencies(Path gradleFile) {
-        Set<ProjectKey> dependencies = new HashSet<>();
+    private Set<Project> collectProjectDependencies(Path gradleFile) {
+        Set<Project> dependencies = new HashSet<>();
 
         Matcher matcher = GRADLE_PROJECT_PATTERN.matcher(
             ProjectDetectorUtil.readFile(gradleFile));
@@ -50,19 +50,19 @@ public class GradleProjectDetector implements ProjectDetector {
         return dependencies;
     }
 
-    private ProjectKey getProjectKey(String path, String rawProjectName) {
-        ProjectKey projectKey = getProjectKey(rawProjectName);
+    private Project getProjectKey(String path, String rawProjectName) {
+        Project project = getProjectKey(rawProjectName);
 
-        projectKey.setPath(path);
+        project.setPath(path);
 
-        return projectKey;
+        return project;
     }
     
-    private ProjectKey getProjectKey(String rawProjectName) {
+    private Project getProjectKey(String rawProjectName) {
        return ProjectDetectorUtil.getProjectKey(rawProjectName, projectInfos);
     }
 
-    private final Map<String, ProjectKey> projectInfos = new HashMap<>();
+    private final Map<String, Project> projectInfos = new HashMap<>();
 
     private static final Pattern GRADLE_PROJECT_PATTERN = Pattern.compile(
         "project.*\\(*[\"'](.*)[\"']\\)");

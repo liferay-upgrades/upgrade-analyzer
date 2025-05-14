@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -30,7 +30,7 @@ public class ThemeProjectDetector implements ProjectDetector {
         projectsDependencyGraphBuilder.addProject(getThemeProjectKey(file), Collections.emptySet());
     }
 
-    public ProjectKey getThemeProjectKey(Path file) {
+    public Project getThemeProjectKey(Path file) {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -56,10 +56,10 @@ public class ThemeProjectDetector implements ProjectDetector {
                 String themeRootFolderName = themeRootPath.substring(themeRootPath.lastIndexOf("/") + 1);
 
                 if (themeRootFolderName.equalsIgnoreCase(themeId)) {
-                    return  new ProjectKey(themeRootFolderName, themeRootPath);
+                    return  new Project(themeRootFolderName, themeRootPath);
                 }
 
-                return  new ProjectKey(themeRootFolderName + "[" + themeId + "]", themeRootPath);
+                return  new Project(themeRootFolderName + "[" + themeId + "]", themeRootPath);
             }
         }
         catch (Exception exception) {

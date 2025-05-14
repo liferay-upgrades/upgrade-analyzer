@@ -5,31 +5,31 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class ProjectKey {
+public class Project {
 
-    public ProjectKey(String name) {
+    public Project(String name) {
         this.name = name;
         this.key = name;
     }
 
-    public ProjectKey(String name, String path) {
+    public Project(String name, String path) {
         this(name);
         this.path = path;
     }
 
-    public void addConsumer(ProjectKey consumer) {
+    public void addConsumer(Project consumer) {
         this.consumers.add(consumer);
     }
 
-    public Set<ProjectKey> getConsumers() {
+    public Set<Project> getConsumers() {
         return consumers;
     }
 
-    public void addDependency(ProjectKey subProject) {
+    public void addDependency(Project subProject) {
         this.dependencies.add(subProject);
     }
 
-    public Set<ProjectKey> getDependencies() {
+    public Set<Project> getDependencies() {
         return dependencies;
     }
 
@@ -69,7 +69,7 @@ public class ProjectKey {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProjectKey that = (ProjectKey) o;
+        Project that = (Project) o;
         return Objects.equals(name, that.name) && Objects.equals(key, that.key) && Objects.equals(group, that.group);
     }
 
@@ -90,7 +90,7 @@ public class ProjectKey {
     private String path;
     private String name;
 
-    private final Set<ProjectKey> dependencies = new HashSet<>();
-    private final Set<ProjectKey> consumers = new HashSet<>();
+    private final Set<Project> dependencies = new HashSet<>();
+    private final Set<Project> consumers = new HashSet<>();
 
 }

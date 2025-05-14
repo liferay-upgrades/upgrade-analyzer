@@ -1,7 +1,7 @@
 package com.liferay.upgrades.analyzer.project.dependency.detector;
 
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.ProjectKey;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,17 +43,17 @@ public class MavenProjectDetector implements ProjectDetector {
     public void postProcess(ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         for (Map.Entry<String, Set<String>> module : modules.entrySet()) {
             projectsDependencyGraphBuilder.addProject(
-                new ProjectKey(module.getKey(), modulesPath.get(module.getKey())),
+                new Project(module.getKey(), modulesPath.get(module.getKey())),
                     collectProjectDependencies(module.getValue()));
         }
     }
 
-    private Set<ProjectKey> collectProjectDependencies(Set<String> allDependencies) {
-        Set<ProjectKey> dependencies = new HashSet<>();
+    private Set<Project> collectProjectDependencies(Set<String> allDependencies) {
+        Set<Project> dependencies = new HashSet<>();
 
         for (String dependency : allDependencies) {
             if (modules.containsKey(dependency)) {
-                dependencies.add(new ProjectKey(dependency));
+                dependencies.add(new Project(dependency));
             }
         }
 
