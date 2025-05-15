@@ -1,5 +1,8 @@
 package com.liferay.upgrades.analyzer.main;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectStartupUniquifier;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
@@ -15,6 +18,7 @@ import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Main {
@@ -32,7 +36,7 @@ public class Main {
             sb.append("\t--startup-game-plan or -stp to export the startup game plan\n");
             sb.append("\t--module-deploy or -md to deploy a module and its submodules\n");
             sb.append("\tIn the -md option you need to specify the path to the module you want to deploy, ");
-            sb.append("ie. -md /path/to/workspace/modules/lorem-ipsum-module\n");
+            sb.append("ie. -md -f /path/to/workspace/modules/lorem-ipsum-module\n");
             sb.append("\t--folder or -f to specify the path for the liferay workspace\n");
             sb.append("If just the /path/to/workspace is given, the output will be the same as -p -f /path/to/workspace");
 
@@ -94,32 +98,23 @@ public class Main {
     private static ExportOptions _resolveOptions(String[] args) {
         ExportOptions exportOptions = new ExportOptions();
 
-        if (args.length == 1 && !args[0].isBlank()) {
-            exportOptions.gamePlan = true;
-            exportOptions.directory = args[0];
+        JCommander jCommander = JCommander.newBuilder()
+                .addObject(exportOptions)
+                .build();
+
+        jCommander.parse(args);
+
+        int countUnassigns = 0;
+
+        for (ParameterDescription parameterDescription : jCommander.getParameters()) {
+            if (!parameterDescription.isAssigned() && (!parameterDescription.getNames().contains("-md")
+                    || !parameterDescription.getNames().contains("--module-deploy"))) {
+                countUnassigns++;
+            }
         }
 
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-
-            if (arg.equals("--dot-graph") || arg.equals("-d")) {
-                exportOptions.dotGraph = true;
-            }
-            else if (arg.equals("--game-plan") || arg.equals("-p")) {
-                exportOptions.gamePlan = true;
-            }
-            else if (arg.equals("--folder") || arg.equals("-f")) {
-                exportOptions.directory = args[i + 1];
-                i++;
-            }
-            else if (arg.equals("--module-deploy") || arg.equals("-md")){
-                exportOptions.moduleDeployer = true;
-                exportOptions.directory = args[i + 1];
-                i++;
-            }
-            else if (arg.equals("--startup-game-plan") || arg.equals("-stp")){
-                exportOptions.startupGamePlan =true;
-            }
+        if (countUnassigns == exportOptions.exporters().size()) {
+            exportOptions.gamePlan = true;
         }
 
         return exportOptions;
@@ -127,15 +122,27 @@ public class Main {
 
     private static class ExportOptions {
 
+        @Parameter(names = {"-dot-graph", "-d"})
         boolean dotGraph;
 
+        @Parameter(names = {"--game-plan", "-p"})
         boolean gamePlan;
 
+        @Parameter(names = {"--startup-game-plan", "-stp"})
         boolean startupGamePlan;
 
+        @Parameter(names = {"--module-deploy", "-md"})
         boolean moduleDeployer;
 
+        @Parameter(names = {"--folder", "-f"}, required = true)
         String directory;
+
+        public Map<String, Boolean> exporters() {
+            return Map.of(
+                    "dot-graph", dotGraph, "game-plan", gamePlan,
+                    "startup-game-plan", startupGamePlan
+            );
+        }
 
     }
 
