@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CsvProjectDependencyExporter implements ProjectDependencyExporter<String> {
+
     @Override
     public String export(ProjectsDependencyGraph projectsDependencyGraph) {
         StringBuilder sb = new StringBuilder();

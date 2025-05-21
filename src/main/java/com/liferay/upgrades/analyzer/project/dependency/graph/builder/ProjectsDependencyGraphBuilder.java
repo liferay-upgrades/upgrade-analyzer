@@ -9,7 +9,7 @@ import java.util.Set;
 public class ProjectsDependencyGraphBuilder {
 
     public ProjectsDependencyGraphBuilder addProject(
-            Project projectKey, Set<Project> dependencies) {
+        Project projectKey, Set<Project> dependencies) {
 
         Project project = _getOrCreate(projectKey);
 

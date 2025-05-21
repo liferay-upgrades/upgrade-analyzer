@@ -12,7 +12,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class ProjectDependencyAnalyzer {
-    private final ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder;
 
     public ProjectDependencyAnalyzer(List<ProjectDetector> projectDetectors) {
          this.projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
@@ -50,7 +49,7 @@ public class ProjectDependencyAnalyzer {
             });
         }
         catch (NoSuchFileException noSuchFileExceptionSuchFileException) {
-            logger.error(rootProjectPath + " directory is not available", noSuchFileExceptionSuchFileException);
+            logger.error("{} directory is not available", rootProjectPath, noSuchFileExceptionSuchFileException);
         }
         catch (IOException e) {
             logger.error(e, e);
@@ -66,15 +65,22 @@ public class ProjectDependencyAnalyzer {
 
     }
 
+    private final ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder;
+
     private final List<ProjectDetector> projectDetectors;
 
     private static final Set<String> _SKIP_FOLDERS = new HashSet<>();
 
     static {
+        _SKIP_FOLDERS.add(".git");
         _SKIP_FOLDERS.add("bin");
         _SKIP_FOLDERS.add("build");
+        _SKIP_FOLDERS.add("dist");
         _SKIP_FOLDERS.add("node_modules");
+        _SKIP_FOLDERS.add("node_module_cache");
+        _SKIP_FOLDERS.add("target");
     }
 
-    private static Logger logger = LogManager.getLogger(ProjectDependencyAnalyzer.class);
+    private static final Logger logger = LogManager.getLogger(ProjectDependencyAnalyzer.class);
+
 }
