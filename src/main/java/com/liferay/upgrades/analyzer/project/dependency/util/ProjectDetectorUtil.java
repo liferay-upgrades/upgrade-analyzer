@@ -43,6 +43,15 @@ public class ProjectDetectorUtil {
         return projectInfos.computeIfAbsent(key, name -> new Project(key));
     }
 
+    public static Project getProjectKey(Path file) {
+        String path = file.getParent().toUri().getPath();
+        String fileName = file.getParent().getFileName().toString();
+
+        String key = ProjectDetectorUtil.normalize(fileName);
+
+        return new Project(key, path);
+    }
+
     public static String normalize(String key) {
         return key.trim().replaceAll("'", "").replaceAll("\"", "");
     }
