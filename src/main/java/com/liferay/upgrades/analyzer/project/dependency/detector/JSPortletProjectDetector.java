@@ -19,20 +19,11 @@ public class JSPortletProjectDetector implements ProjectDetector {
     @Override
     public void process(Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
         projectsDependencyGraphBuilder.addProject(
-                _getProjectKey(file),  Collections.emptySet());
-    }
-
-    private Project _getProjectKey(Path file) {
-        String path = file.getParent().toUri().getPath();
-        String fileName = file.getParent().getFileName().toString();
-
-        String key = ProjectDetectorUtil.normalize(fileName);
-
-        return new Project(key, path);
+            ProjectDetectorUtil.getProjectKey(file),  Collections.emptySet());
     }
 
     private boolean _validateJsonContent(Path contentPath) {
-            String jsonContent = ProjectDetectorUtil.readFile(contentPath);
+        String jsonContent = ProjectDetectorUtil.readFile(contentPath);
 
         if (jsonContent.isEmpty()) {
             return false;
