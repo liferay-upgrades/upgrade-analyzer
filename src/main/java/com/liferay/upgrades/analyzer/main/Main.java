@@ -4,17 +4,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
+
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
-import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectStartupUniquifier;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.ModuleDeployer;
-import com.liferay.upgrades.analyzer.project.dependency.detector.GradleProjectDetector;
-import com.liferay.upgrades.analyzer.project.dependency.detector.JSPortletProjectDetector;
-import com.liferay.upgrades.analyzer.project.dependency.detector.MavenProjectDetector;
-import com.liferay.upgrades.analyzer.project.dependency.detector.ThemeProjectDetector;
-import com.liferay.upgrades.analyzer.project.dependency.exporter.*;
+import com.liferay.upgrades.analyzer.project.dependency.detector.*;
+import com.liferay.upgrades.analyzer.project.dependency.exporter.enums.ProjectExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -36,37 +32,21 @@ public class Main {
                 LocalShell.executeCommand(script);
             }
             else {
-                ProjectDependencyAnalyzer projectDependencyAnalyzer =
-                        new ProjectDependencyAnalyzer(
-                                List.of(
-                                        new GradleProjectDetector(), new MavenProjectDetector(),
-                                        new ThemeProjectDetector(), new JSPortletProjectDetector()));
+                for (Map.Entry<String, Boolean> entry : exportOptions.exporters().entrySet()) {
+                    if (entry.getValue()) {
+                        ProjectDependencyAnalyzer projectDependencyAnalyzer =
+                            _factoryProjectDependencyAnalyzer(entry.getKey());
 
-                ProjectsDependencyGraph projectsDependencyGraph =
-                        projectDependencyAnalyzer.analyze(exportOptions.directory);
+                        ProjectsDependencyGraph projectsDependencyGraph =
+                            projectDependencyAnalyzer.analyze(exportOptions.directory);
 
-                if  (exportOptions.gamePlan) {
-                    System.out.println(
-                            new GamePlanProjectDependencyExporter().export(projectsDependencyGraph));
-                    System.out.println(
-                            new CsvProjectDependencyExporter().export(projectsDependencyGraph));
-                }
-
-                if (exportOptions.dotGraph) {
-                    System.out.println(
-                            new DOTProjectDependencyExporter().export(projectsDependencyGraph));
-                    System.out.println(
-                            new CsvProjectDependencyExporter().export(projectsDependencyGraph));
-                }
-
-                if (exportOptions.startupGamePlan) {
-                    List<List<Project>> uniqueProjects =
-                            new ProjectStartupUniquifier().uniquify(projectsDependencyGraph);
-
-                    System.out.println(
-                            new StartupGamePlanProjectDependecyExporter().export(uniqueProjects));
-                    System.out.println(
-                            new StartupCsvProjectDependencyExporter().export(uniqueProjects));
+                        if (entry.getKey().equals("dot-graph"))
+                            ProjectExporter.DOT_GRAPH.export(projectsDependencyGraph);
+                        if (entry.getKey().equals("game-plan"))
+                            ProjectExporter.GAME_PLAN.export(projectsDependencyGraph);
+                        if (entry.getKey().equals("startup-game-plan"))
+                            ProjectExporter.STARTUP_GAME_PLAN.export(projectsDependencyGraph);
+                    }
                 }
             }
         }
@@ -76,7 +56,29 @@ public class Main {
             }
             else throw new RuntimeException(exception);
         }
+    }
 
+    private static ProjectDependencyAnalyzer _factoryProjectDependencyAnalyzer(
+        String exportType) {
+
+        if (exportType.equals("game-plan") || exportType.equals("dot-graph")) {
+            return new ProjectDependencyAnalyzer(
+                List.of(
+                    new GradleProjectDetector(), new MavenProjectDetector(),
+                    new JSPortletProjectDetector(), new ThemeProjectDetector()
+                )
+            );
+        }
+        else if (exportType.equals("startup-game-plan")) {
+            return new ProjectDependencyAnalyzer(
+                List.of(
+                    new APIModuleProjectDetector(), new FragmentHostModuleProjectDetector(),
+                    new ServiceModuleProjectDetector()
+                )
+            );
+        }
+        else throw new RuntimeException(
+            "Unsupported export type: " + exportType);
     }
 
     private static String _generateOptionsHelp() {
