@@ -1,0 +1,128 @@
+package com.liferay.upgrades.analyzer.exporter;
+
+import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
+import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
+import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
+import com.liferay.upgrades.analyzer.project.dependency.model.Project;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+public class CsvProjectDependencyExporterTest {
+
+    @Test
+    public void testExportCSVWithNoDependencies() throws IOException {
+        final var expectedMessage = "CSV file generated at ";
+
+        ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
+
+        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
+                .addProject(
+                        new Project("a"),
+                        Set.of())
+                .addProject(
+                        new Project("b"),
+                        Set.of())
+                .addProject(
+                        new Project("c"),
+                        Set.of()).build();
+
+        final var result = new CsvProjectDependencyExporter().export(projectsDependencyGraph);
+
+        Assertions.assertTrue(result.contains("CSV file generated at "), expectedMessage);
+
+        Pattern pattern = Pattern.compile("CSV file generated at (.+\\/(projects-\\d+\\.csv))");
+        Matcher matcher = pattern.matcher(result);
+
+        if (matcher.find()) {
+            String fullPathString = matcher.group(1);
+
+            Path generatedCSVFilePath = Paths.get(fullPathString);
+
+            List<String> lines = Files.readAllLines(generatedCSVFilePath);
+
+            Assertions.assertNotNull(lines, "The lines read must not be null.");
+            Assertions.assertTrue(lines.contains("1,a,a,,1,0,FALSE,,0,"));
+            Files.delete(generatedCSVFilePath);
+        }
+
+    }
+
+    @Test
+    public void testExportCSVWithMoreThanOneDependecy() throws IOException {
+        final var expectedMessage = "CSV file generated at ";
+
+        ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
+
+        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
+                .addProject(
+                        new Project("search-portlet"),
+                        Set.of(new Project("employee-api"), new Project("employee-web")))
+                .addProject(
+                        new Project("employee-api"),
+                        Set.of())
+                .addProject(
+                        new Project("employee-web"),
+                        Set.of(new Project("webservice-core")))
+                .addProject(
+                        new Project("leave-portlet"),
+                        Set.of(new Project("webservice-core")))
+                .addProject(
+                        new Project("favorite-assets"),
+                        Set.of(new Project("employee-api")))
+                .addProject(
+                        new Project("something-portlet"),
+                        Set.of(new Project("employee-api")))
+                .addProject(
+                        new Project("lorem-ipsum-portlet"),
+                        Set.of(new Project("employee-api")))
+                .addProject(
+                        new Project("spectator-portlet"),
+                        Set.of(new Project("webservice-core")))
+                .addProject(
+                        new Project("employee-portal-language"),
+                        Set.of())
+                .addProject(
+                        new Project("to-do-portlet"),
+                        Set.of(new Project("webservice-core"))
+                ).build();
+
+        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+
+        Assertions.assertEquals(3, leaves.size());
+        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
+
+        final var result = new CsvProjectDependencyExporter().export(projectsDependencyGraph);
+
+        Assertions.assertTrue(result.contains("CSV file generated at "), expectedMessage);
+
+        Pattern pattern = Pattern.compile("CSV file generated at (.+\\/(projects-\\d+\\.csv))");
+        Matcher matcher = pattern.matcher(result);
+
+        if (matcher.find()) {
+            String fullPathString = matcher.group(1);
+
+            Path generatedCSVFilePath = Paths.get(fullPathString);
+
+            List<String> lines = Files.readAllLines(generatedCSVFilePath);
+
+            Assertions.assertNotNull(lines, "The lines read must not be null.");
+            Assertions.assertTrue(lines.contains("Level,Bundle Name,Symbolic Name,Dependencies,Nº of compile errors " +
+                    "before automation,Nº of compile errors after automation,Automation suggested fix?,Nº of errors" +
+                    " fixed by suggestions,Nº of errors fixed (Total),Obs"));
+            Assertions.assertTrue(lines.contains("1,webservice-core,webservice-core,,1,0,FALSE,,0,"));
+            Assertions.assertTrue(lines.contains("2,leave-portlet,leave-portlet,webservice-core,1,0,FALSE,,0,"));
+            Files.delete(generatedCSVFilePath);
+        }
+    }
+}
