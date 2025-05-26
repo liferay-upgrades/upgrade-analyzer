@@ -3,19 +3,21 @@ package com.liferay.upgrades.analyzer.project.dependency.analyzer;
 import com.liferay.upgrades.analyzer.project.dependency.detector.ProjectDetector;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ProjectDependencyAnalyzer {
 
     public ProjectDependencyAnalyzer(List<ProjectDetector> projectDetectors) {
-         this.projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
-         this.projectDetectors = projectDetectors;
+         this._projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
+         this._projectDetectors = projectDetectors;
     }
 
     public ProjectsDependencyGraph analyze(String rootProjectPath) {
@@ -23,8 +25,11 @@ public class ProjectDependencyAnalyzer {
         try {
             Files.walkFileTree(Paths.get(rootProjectPath), new SimpleFileVisitor<>() {
 
+                @Nonnull
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult preVisitDirectory(
+                    @Nonnull Path dir, @Nonnull BasicFileAttributes attrs) throws IOException {
+
                     String folderName = dir.getFileName().toString();
 
                     if (_SKIP_FOLDERS.contains(folderName)) {
@@ -34,13 +39,16 @@ public class ProjectDependencyAnalyzer {
                     return FileVisitResult.CONTINUE;
                 }
 
+                @Nonnull
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(
+                    @Nonnull Path file, @Nonnull BasicFileAttributes attrs) throws IOException {
+
                     String fileName = file.getFileName().toString();
 
-                    for (ProjectDetector projectDetector : projectDetectors) {
+                    for (ProjectDetector projectDetector : _projectDetectors) {
                         if (projectDetector.matches(fileName, file)) {
-                            projectDetector.process(file, projectsDependencyGraphBuilder);
+                            projectDetector.process(file, _projectsDependencyGraphBuilder);
                         }
                     }
 
@@ -49,25 +57,27 @@ public class ProjectDependencyAnalyzer {
             });
         }
         catch (NoSuchFileException noSuchFileExceptionSuchFileException) {
-            logger.error("{} directory is not available", rootProjectPath, noSuchFileExceptionSuchFileException);
+            _logger.error("{} directory is not available", rootProjectPath, noSuchFileExceptionSuchFileException);
         }
         catch (IOException e) {
-            logger.error(e, e);
+            _logger.error(e, e);
 
             throw new RuntimeException(e);
         }
 
-        for (ProjectDetector projectDetector : projectDetectors) {
-            projectDetector.postProcess(projectsDependencyGraphBuilder);
+        for (ProjectDetector projectDetector : _projectDetectors) {
+            projectDetector.postProcess(_projectsDependencyGraphBuilder);
         }
 
-        return projectsDependencyGraphBuilder.build();
+        return _projectsDependencyGraphBuilder.build();
 
     }
 
-    private final ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder;
+    private final ProjectsDependencyGraphBuilder _projectsDependencyGraphBuilder;
 
-    private final List<ProjectDetector> projectDetectors;
+    private final List<ProjectDetector> _projectDetectors;
+
+    private static final Logger _logger = LogManager.getLogger(ProjectDependencyAnalyzer.class);
 
     private static final Set<String> _SKIP_FOLDERS = new HashSet<>();
 
@@ -80,7 +90,5 @@ public class ProjectDependencyAnalyzer {
         _SKIP_FOLDERS.add("node_module_cache");
         _SKIP_FOLDERS.add("target");
     }
-
-    private static final Logger logger = LogManager.getLogger(ProjectDependencyAnalyzer.class);
 
 }
