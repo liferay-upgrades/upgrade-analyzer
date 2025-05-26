@@ -2,8 +2,6 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 group = 'com.liferay.upgrades'
 version = '2.0.3'
 
@@ -12,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation group: "org.reflections", name: "reflections", version: "0.10.2"
     implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation group: 'org.json', name: 'json', version: '20240303'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
