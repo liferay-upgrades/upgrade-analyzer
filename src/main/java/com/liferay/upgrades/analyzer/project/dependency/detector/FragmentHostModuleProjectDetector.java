@@ -20,14 +20,13 @@ public class FragmentHostModuleProjectDetector implements ProjectDetector {
 
         Project project = ProjectDetectorUtil.getProjectKey(file);
 
-        String keyWithDetector = String.format(
+        String detectorKey = String.format(
             "%s=%s", project.getKey(), FragmentHostModuleProjectDetector.class.getSimpleName());
 
-        project.setKey(keyWithDetector);
+        project.setKey(detectorKey);
         project.setName(project.getKey());
 
-        projectsDependencyGraphBuilder.addProject(
-            project, Collections.emptySet());
+        projectsDependencyGraphBuilder.addProject(project, Collections.emptySet());
     }
 
     private boolean _validateFragmentHostModule(Path file) {
