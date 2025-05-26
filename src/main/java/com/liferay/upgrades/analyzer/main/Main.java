@@ -6,14 +6,13 @@ import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
+import com.liferay.upgrades.analyzer.project.dependency.analyzer.factory.ProjectDependencyAnalyzerFactory;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
 import com.liferay.upgrades.analyzer.project.dependency.deployer.ModuleDeployer;
-import com.liferay.upgrades.analyzer.project.dependency.detector.*;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.enums.ProjectExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -35,7 +34,7 @@ public class Main {
                 for (Map.Entry<String, Boolean> entry : exportOptions.exporters().entrySet()) {
                     if (entry.getValue()) {
                         ProjectDependencyAnalyzer projectDependencyAnalyzer =
-                            _factoryProjectDependencyAnalyzer(entry.getKey());
+                            ProjectDependencyAnalyzerFactory.getProjectDependencyAnalyzer(entry.getKey());
 
                         ProjectsDependencyGraph projectsDependencyGraph =
                             projectDependencyAnalyzer.analyze(exportOptions.directory);
@@ -56,29 +55,6 @@ public class Main {
             }
             else throw new RuntimeException(exception);
         }
-    }
-
-    private static ProjectDependencyAnalyzer _factoryProjectDependencyAnalyzer(
-        String exportType) {
-
-        if (exportType.equals("game-plan") || exportType.equals("dot-graph")) {
-            return new ProjectDependencyAnalyzer(
-                List.of(
-                    new GradleProjectDetector(), new MavenProjectDetector(),
-                    new JSPortletProjectDetector(), new ThemeProjectDetector()
-                )
-            );
-        }
-        else if (exportType.equals("startup-game-plan")) {
-            return new ProjectDependencyAnalyzer(
-                List.of(
-                    new APIModuleProjectDetector(), new FragmentHostModuleProjectDetector(),
-                    new ServiceModuleProjectDetector()
-                )
-            );
-        }
-        else throw new RuntimeException(
-            "Unsupported export type: " + exportType);
     }
 
     private static String _generateOptionsHelp() {
@@ -120,6 +96,13 @@ public class Main {
 
     private static class ExportOptions {
 
+        public Map<String, Boolean> exporters() {
+            return Map.of(
+                "dot-graph", dotGraph, "game-plan", gamePlan,
+                "startup-game-plan", startupGamePlan
+            );
+        }
+
         @Parameter(
             names = {"-d", "--dot-graph"},
             description = "Export in the DOT graph format"
@@ -150,13 +133,6 @@ public class Main {
             required = true
         )
         String directory;
-
-        public Map<String, Boolean> exporters() {
-            return Map.of(
-                "dot-graph", dotGraph, "game-plan", gamePlan,
-                "startup-game-plan", startupGamePlan
-            );
-        }
 
     }
 
