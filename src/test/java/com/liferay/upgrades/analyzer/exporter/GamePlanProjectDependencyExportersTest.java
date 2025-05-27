@@ -1,5 +1,6 @@
 package com.liferay.upgrades.analyzer.exporter;
 
+import com.liferay.upgrades.analyzer.project.dependency.exporter.CsvProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.GamePlanProjectDependencyExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
@@ -18,6 +19,68 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GamePlanProjectDependencyExportersTest {
+
+    @Test
+    public void testExportCSVWithNoDependencies() throws IOException {
+        final var expectedMessage = "CSV file generated at ";
+
+        ProjectsDependencyGraph projectsDependencyGraph = _createWithOutDependency();
+
+        final var result = new CsvProjectDependencyExporter().export(projectsDependencyGraph);
+
+        Assertions.assertTrue(result.contains("CSV file generated at "), expectedMessage);
+
+        Pattern pattern = Pattern.compile("CSV file generated at (.+\\/(projects-\\d+\\.csv))");
+        Matcher matcher = pattern.matcher(result);
+
+        if (matcher.find()) {
+            String fullPathString = matcher.group(1);
+
+            Path generatedCSVFilePath = Paths.get(fullPathString);
+
+            List<String> lines = Files.readAllLines(generatedCSVFilePath);
+
+            Assertions.assertNotNull(lines, "The lines read must not be null.");
+            Assertions.assertTrue(lines.contains("1,a,a,,1,0,FALSE,,0,"));
+            Files.delete(generatedCSVFilePath);
+        }
+
+    }
+
+    @Test
+    public void testExportCSVWithMoreThanOneDependecy() throws IOException {
+        final var expectedMessage = "CSV file generated at ";
+
+        ProjectsDependencyGraph projectsDependencyGraph = _createWithDependencies();
+
+        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+
+        Assertions.assertEquals(3, leaves.size());
+        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
+
+        final var result = new CsvProjectDependencyExporter().export(projectsDependencyGraph);
+
+        Assertions.assertTrue(result.contains("CSV file generated at "), expectedMessage);
+
+        Pattern pattern = Pattern.compile("CSV file generated at (.+\\/(projects-\\d+\\.csv))");
+        Matcher matcher = pattern.matcher(result);
+
+        if (matcher.find()) {
+            String fullPathString = matcher.group(1);
+
+            Path generatedCSVFilePath = Paths.get(fullPathString);
+
+            List<String> lines = Files.readAllLines(generatedCSVFilePath);
+
+            Assertions.assertNotNull(lines, "The lines read must not be null.");
+            Assertions.assertTrue(lines.contains("Level,Bundle Name,Symbolic Name,Dependencies,Nº of compile errors " +
+                    "before automation,Nº of compile errors after automation,Automation suggested fix?,Nº of errors" +
+                    " fixed by suggestions,Nº of errors fixed (Total),Obs"));
+            Assertions.assertTrue(lines.contains("1,webservice-core,webservice-core,,1,0,FALSE,,0,"));
+            Assertions.assertTrue(lines.contains("2,leave-portlet,leave-portlet,webservice-core,1,0,FALSE,,0,"));
+            Files.delete(generatedCSVFilePath);
+        }
+    }
 
     @Test
     public void testExportGamePlanTXTWithNoDependencies() throws IOException {
