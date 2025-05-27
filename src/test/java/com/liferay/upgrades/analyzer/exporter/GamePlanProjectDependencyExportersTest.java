@@ -17,24 +17,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GamePlanProjectDependencyExporterTest {
+public class GamePlanProjectDependencyExportersTest {
 
     @Test
-    public void testExportGamePlanWithNoDependencies() throws IOException {
+    public void testExportGamePlanTXTWithNoDependencies() throws IOException {
         final var expectedMessage = "Game Plan generated at ";
 
-        ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
-
-        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
-                .addProject(
-                        new Project("a"),
-                        Set.of())
-                .addProject(
-                        new Project("b"),
-                        Set.of())
-                .addProject(
-                        new Project("c"),
-                        Set.of()).build();
+        ProjectsDependencyGraph projectsDependencyGraph = _createWithOutDependency();
 
         final var result = new GamePlanProjectDependencyExporter().export(projectsDependencyGraph);
 
@@ -57,9 +46,57 @@ public class GamePlanProjectDependencyExporterTest {
     }
 
     @Test
-    public void testExportGamePlanWithMoreThanOneDependency() throws IOException {
+    public void testExportGamePlanTXTWithMoreThanOneDependency() throws IOException {
         final var expectedMessage = "Game Plan generated at ";
 
+        ProjectsDependencyGraph projectsDependencyGraph = _createWithDependencies();
+
+        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
+
+        Assertions.assertEquals(3, leaves.size());
+        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
+
+        final var result = new GamePlanProjectDependencyExporter().export(projectsDependencyGraph);
+
+        Assertions.assertTrue(result.contains("Game Plan generated at "), expectedMessage);
+
+        Pattern pattern = Pattern.compile("Game Plan generated at (.+\\/(projects-\\d+\\.txt))");
+        Matcher matcher = pattern.matcher(result);
+
+        if (matcher.find()){
+            String fullPathString = matcher.group(1);
+
+            Path generatedGamePlanFilePath = Paths.get(fullPathString);
+
+            List<String> lines = Files.readAllLines(generatedGamePlanFilePath);
+
+            Assertions.assertNotNull(lines, "The lines read must not be null.");
+            Assertions.assertTrue(lines.contains("This project contains 11 projects with 3 level(s) of " +
+                    "project dependencies."));
+            Assertions.assertTrue(lines.contains("Level 2 count: 7"));
+            Assertions.assertTrue(lines.contains("\temployee-web 1 (webservice-core)"));
+            Files.delete(generatedGamePlanFilePath);
+        }
+    }
+
+    private ProjectsDependencyGraph _createWithOutDependency(){
+        ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
+
+        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
+                .addProject(
+                        new Project("a"),
+                        Set.of())
+                .addProject(
+                        new Project("b"),
+                        Set.of())
+                .addProject(
+                        new Project("c"),
+                        Set.of()).build();
+
+        return projectsDependencyGraph;
+    }
+
+    private ProjectsDependencyGraph _createWithDependencies(){
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
         ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
@@ -95,31 +132,6 @@ public class GamePlanProjectDependencyExporterTest {
                         Set.of(new Project("webservice-core"))
                 ).build();
 
-        ArrayList<Project> leaves = new ArrayList<>(projectsDependencyGraph.getLeaves());
-
-        Assertions.assertEquals(3, leaves.size());
-        Assertions.assertEquals(3, projectsDependencyGraph.getDepth());
-
-        final var result = new GamePlanProjectDependencyExporter().export(projectsDependencyGraph);
-
-        Assertions.assertTrue(result.contains("Game Plan generated at "), expectedMessage);
-
-        Pattern pattern = Pattern.compile("Game Plan generated at (.+\\/(projects-\\d+\\.txt))");
-        Matcher matcher = pattern.matcher(result);
-
-        if (matcher.find()){
-            String fullPathString = matcher.group(1);
-
-            Path generatedGamePlanFilePath = Paths.get(fullPathString);
-
-            List<String> lines = Files.readAllLines(generatedGamePlanFilePath);
-
-            Assertions.assertNotNull(lines, "The lines read must not be null.");
-            Assertions.assertTrue(lines.contains("This project contains 11 projects with 3 level(s) of " +
-                    "project dependencies."));
-            Assertions.assertTrue(lines.contains("Level 2 count: 7"));
-            Assertions.assertTrue(lines.contains("\temployee-web 1 (webservice-core)"));
-            Files.delete(generatedGamePlanFilePath);
-        }
+        return projectsDependencyGraph;
     }
 }
