@@ -7,12 +7,9 @@ import com.beust.jcommander.ParameterException;
 
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.ProjectDependencyAnalyzer;
 import com.liferay.upgrades.analyzer.project.dependency.analyzer.factory.ProjectDependencyAnalyzerFactory;
-import com.liferay.upgrades.analyzer.project.dependency.deployer.LocalShell;
-import com.liferay.upgrades.analyzer.project.dependency.deployer.ModuleDeployer;
 import com.liferay.upgrades.analyzer.project.dependency.exporter.enums.ProjectExporter;
 import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraph;
 
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -22,30 +19,20 @@ public class Main {
         try {
             ExportOptions exportOptions = _resolveOptions(args);
 
-            if (exportOptions.moduleDeployer) {
-                ModuleDeployer moduleDeployer = new ModuleDeployer();
+            for (Map.Entry<String, Boolean> entry : exportOptions.exporters().entrySet()) {
+                if (entry.getValue()) {
+                    ProjectDependencyAnalyzer projectDependencyAnalyzer =
+                        ProjectDependencyAnalyzerFactory.getProjectDependencyAnalyzer(entry.getKey());
 
-                String script = moduleDeployer.scriptFactory(
-                    Paths.get(exportOptions.directory + "/build.gradle"));
+                    ProjectsDependencyGraph projectsDependencyGraph =
+                        projectDependencyAnalyzer.analyze(exportOptions.directory);
 
-                LocalShell.executeCommand(script);
-            }
-            else {
-                for (Map.Entry<String, Boolean> entry : exportOptions.exporters().entrySet()) {
-                    if (entry.getValue()) {
-                        ProjectDependencyAnalyzer projectDependencyAnalyzer =
-                            ProjectDependencyAnalyzerFactory.getProjectDependencyAnalyzer(entry.getKey());
-
-                        ProjectsDependencyGraph projectsDependencyGraph =
-                            projectDependencyAnalyzer.analyze(exportOptions.directory);
-
-                        if (entry.getKey().equals("dot-graph"))
-                            ProjectExporter.DOT_GRAPH.export(projectsDependencyGraph);
-                        if (entry.getKey().equals("game-plan"))
-                            ProjectExporter.GAME_PLAN.export(projectsDependencyGraph);
-                        if (entry.getKey().equals("startup-game-plan"))
-                            ProjectExporter.STARTUP_GAME_PLAN.export(projectsDependencyGraph);
-                    }
+                    if (entry.getKey().equals("dot-graph"))
+                        ProjectExporter.DOT_GRAPH.export(projectsDependencyGraph);
+                    if (entry.getKey().equals("game-plan"))
+                        ProjectExporter.GAME_PLAN.export(projectsDependencyGraph);
+                    if (entry.getKey().equals("startup-game-plan"))
+                        ProjectExporter.STARTUP_GAME_PLAN.export(projectsDependencyGraph);
                 }
             }
         }
@@ -62,9 +49,6 @@ public class Main {
                 "\t--dot-graph or -d to export in the DOT graph format\n" +
                 "\t--game-plan or -p to export the game plan\n" +
                 "\t--startup-game-plan or -stp to export the startup game plan\n" +
-                "\t--module-deploy or -md to deploy a module and its submodules\n" +
-                "\tIn the -md option you need to specify the path to the module you want to deploy, " +
-                "ie. -md -f /path/to/workspace/modules/lorem-ipsum-module\n" +
                 "\t--folder or -f to specify the path for the liferay workspace (Required)\n" +
                 "If just the /path/to/workspace is given, the output will be the same as -p -f /path/to/workspace";
     }
@@ -81,8 +65,7 @@ public class Main {
         int countUnassigns = 0;
 
         for (ParameterDescription parameterDescription : jCommander.getParameters()) {
-            if (!parameterDescription.isAssigned() && (!parameterDescription.getNames().contains("-md")
-                    || !parameterDescription.getNames().contains("--module-deploy"))) {
+            if (!parameterDescription.isAssigned()) {
                 countUnassigns++;
             }
         }
@@ -120,12 +103,6 @@ public class Main {
             description = "Export the startup game plan"
         )
         boolean startupGamePlan;
-
-        @Parameter(
-            names = {"-md", "--module-deploy"},
-            description = "Deploy a module and its submodules"
-        )
-        boolean moduleDeployer;
 
         @Parameter(
             names = {"-f", "--folder"},
