@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public abstract class BaseStartupProjectDependencyExporter implements ProjectDependencyExporter<String> {
+public abstract class BaseStartupProjectDependencyExporter
+    implements ProjectDependencyExporter<String> {
 
     protected abstract void appendByCategory(
         Map<String, StringBuilder> categoryMap, String category, String content);
@@ -28,32 +29,35 @@ public abstract class BaseStartupProjectDependencyExporter implements ProjectDep
 
         Map<String, StringBuilder> categoryMap = new LinkedHashMap<>();
 
+        categoryMap.put("Exporters", new StringBuilder());
         categoryMap.put("Services and APIs", new StringBuilder());
-        categoryMap.put("Commons and Utils", new StringBuilder());
-        categoryMap.put("Hooks", new StringBuilder());
+        categoryMap.put("Plugins", new StringBuilder());
         categoryMap.put("Fragment-Hosts", new StringBuilder());
-        categoryMap.put("Others (Including themes and web modules)", new StringBuilder());
+        categoryMap.put("Others (including themes)", new StringBuilder());
 
         for (Project project : projectsDependencyGraph.getLeaves()) {
             String projectCategory = project.getName().split("=")[1];
             String projectName = project.getName().split("=")[0];
 
-            if (projectCategory.equals(APIModuleProjectDetector.class.getSimpleName()) ||
-                    projectCategory.equals(ServiceModuleProjectDetector.class.getSimpleName())) {
+            if (projectCategory.equals(ExporterModuleDetector.class.getSimpleName())) {
+                appendByCategory(categoryMap, "Exporters", projectName);
+            }
+            else if (projectCategory.equals(APIModuleProjectDetector.class.getSimpleName()) ||
+                        projectCategory.equals(ServiceModuleProjectDetector.class.getSimpleName())) {
+
                 appendByCategory(categoryMap, "Services and APIs", projectName);
             }
-            else if (projectCategory.equals(CommonPlusUtilModuleDetector.class.getSimpleName())) {
-                appendByCategory(categoryMap, "Commons and Utils", projectName);
+            else if (projectCategory.equals(PluginModuleProjectDetector.class.getSimpleName())) {
+                appendByCategory(categoryMap, "Plugins", projectName);
             }
-            else if (projectCategory.equals(HookModuleProjectDetector.class.getSimpleName())) {
-                appendByCategory(categoryMap, "Hooks", projectName);
-            }
-            else if (projectCategory.equals(FragmentHostModuleProjectDetector.class.getSimpleName())) {
+            else if (projectCategory.equals(
+            FragmentHostModuleProjectDetector.class.getSimpleName())) {
+
                 appendByCategory(categoryMap, "Fragment-Hosts", projectName);
             }
             else {
                 appendByCategory(
-                    categoryMap, "Others (Including themes and web modules)", projectName);
+                    categoryMap, "Others (including themes)", projectName);
             }
         }
 
