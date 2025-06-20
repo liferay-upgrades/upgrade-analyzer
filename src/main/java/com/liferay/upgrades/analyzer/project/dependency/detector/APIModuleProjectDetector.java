@@ -1,38 +1,31 @@
 package com.liferay.upgrades.analyzer.project.dependency.detector;
 
-import com.liferay.upgrades.analyzer.project.dependency.graph.builder.ProjectsDependencyGraphBuilder;
-import com.liferay.upgrades.analyzer.project.dependency.model.Project;
 import com.liferay.upgrades.analyzer.project.dependency.util.ProjectDetectorUtil;
 
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class APIModuleProjectDetector implements ProjectDetector {
+public class APIModuleProjectDetector extends BaseStartupProjectDetector {
+
+    @Override
+    protected String getClassName() {
+        return APIModuleProjectDetector.class.getSimpleName();
+    }
 
     @Override
     public boolean matches(String fileName, Path file) {
         return fileName.contains("bnd.bnd") && _validateAPIModule(file);
     }
 
-    @Override
-    public void process(
-        Path file, ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder) {
-
-        Project project = ProjectDetectorUtil.getProjectKey(file);
-
-        String detectorKey = String.format(
-            "%s=%s", project.getKey(), APIModuleProjectDetector.class.getSimpleName());
-
-        project.setKey(detectorKey);
-        project.setName(project.getKey());
-
-        projectsDependencyGraphBuilder.addProject(project, Collections.emptySet());
-    }
-
     private boolean _validateAPIModule(Path file) {
         String content = ProjectDetectorUtil.readFile(file);
 
-        return !content.isBlank() && content.contains("-includeresource:");
+        Pattern pattern = Pattern.compile("-includeresource:\\s*META-INF/service.xml");
+
+        Matcher matcher = pattern.matcher(content);
+
+       return matcher.find();
     }
 
 }
