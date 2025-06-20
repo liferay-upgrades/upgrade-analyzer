@@ -56,10 +56,10 @@ public class ThemeProjectDetector implements ProjectDetector {
                 String themeRootFolderName = themeRootPath.substring(themeRootPath.lastIndexOf("/") + 1);
 
                 if (themeRootFolderName.equalsIgnoreCase(themeId)) {
-                    return  new Project(themeRootFolderName, themeRootPath);
+                    return new Project(themeRootFolderName, themeRootPath);
                 }
 
-                return  new Project(themeRootFolderName + "[" + themeId + "]", themeRootPath);
+                return new Project(themeRootFolderName + "[" + themeId + "]", themeRootPath);
             }
         }
         catch (Exception exception) {

@@ -1,9 +1,9 @@
 package com.liferay.upgrades.analyzer.project.dependency.exporter;
 
-
 import java.util.Map;
 
-public class StartupCsvProjectDependencyExporter extends BaseStartupProjectDependencyExporter {
+public class StartupCsvProjectDependencyExporter
+    extends BaseStartupProjectDependencyExporter {
 
     @Override
     protected void appendByCategory(
