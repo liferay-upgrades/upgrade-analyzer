@@ -145,56 +145,52 @@ public class GamePlanProjectDependencyExportersTest {
     private ProjectsDependencyGraph _createWithOutDependency(){
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
-        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
+        return projectsDependencyGraphBuilder
                 .addProject(
-                        new Project("a"),
-                        Set.of())
+                    new Project("a"),
+                    Set.of())
                 .addProject(
-                        new Project("b"),
-                        Set.of())
+                    new Project("b"),
+                    Set.of())
                 .addProject(
-                        new Project("c"),
-                        Set.of()).build();
-
-        return projectsDependencyGraph;
+                    new Project("c"),
+                    Set.of()).build();
     }
 
     private ProjectsDependencyGraph _createWithDependencies(){
         ProjectsDependencyGraphBuilder projectsDependencyGraphBuilder = new ProjectsDependencyGraphBuilder();
 
-        ProjectsDependencyGraph projectsDependencyGraph = projectsDependencyGraphBuilder
+        return projectsDependencyGraphBuilder
                 .addProject(
-                        new Project("search-portlet"),
-                        Set.of(new Project("employee-api"), new Project("employee-web")))
+                    new Project("search-portlet"),
+                    Set.of(new Project("employee-api"), new Project("employee-web")))
                 .addProject(
-                        new Project("employee-api"),
-                        Set.of())
+                    new Project("employee-api"),
+                    Set.of())
                 .addProject(
-                        new Project("employee-web"),
-                        Set.of(new Project("webservice-core")))
+                    new Project("employee-web"),
+                    Set.of(new Project("webservice-core")))
                 .addProject(
-                        new Project("leave-portlet"),
-                        Set.of(new Project("webservice-core")))
+                    new Project("leave-portlet"),
+                    Set.of(new Project("webservice-core")))
                 .addProject(
-                        new Project("favorite-assets"),
-                        Set.of(new Project("employee-api")))
+                    new Project("favorite-assets"),
+                    Set.of(new Project("employee-api")))
                 .addProject(
-                        new Project("something-portlet"),
-                        Set.of(new Project("employee-api")))
+                    new Project("something-portlet"),
+                    Set.of(new Project("employee-api")))
                 .addProject(
-                        new Project("lorem-ipsum-portlet"),
-                        Set.of(new Project("employee-api")))
+                    new Project("lorem-ipsum-portlet"),
+                    Set.of(new Project("employee-api")))
                 .addProject(
-                        new Project("spectator-portlet"),
-                        Set.of(new Project("webservice-core")))
+                    new Project("spectator-portlet"),
+                    Set.of(new Project("webservice-core")))
                 .addProject(
-                        new Project("employee-portal-language"),
-                        Set.of())
+                    new Project("employee-portal-language"),
+                    Set.of())
                 .addProject(
-                        new Project("to-do-portlet"),
-                        Set.of(new Project("webservice-core"))
+                    new Project("to-do-portlet"),
+                    Set.of(new Project("webservice-core"))
                 ).build();
-
-        return projectsDependencyGraph;
     }
 }
