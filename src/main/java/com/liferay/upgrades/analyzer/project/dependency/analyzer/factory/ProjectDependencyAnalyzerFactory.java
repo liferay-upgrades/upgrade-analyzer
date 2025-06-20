@@ -21,8 +21,8 @@ public class ProjectDependencyAnalyzerFactory {
         else if (exportType.equals(_STARTUP_GAME_PLAN_EXPORT_TYPE)) {
             return new ProjectDependencyAnalyzer(
                 List.of(
-                    new APIModuleProjectDetector(), new CommonPlusUtilModuleDetector(),
-                    new FragmentHostModuleProjectDetector(), new HookModuleProjectDetector(),
+                    new APIModuleProjectDetector(), new ExporterModuleDetector(),
+                    new FragmentHostModuleProjectDetector(), new PluginModuleProjectDetector(),
                     new ServiceModuleProjectDetector(), new OtherModuleProjectDetector()
                 )
             );
